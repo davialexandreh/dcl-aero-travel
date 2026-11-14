@@ -54,7 +54,7 @@ content:
     fields:
       - { name: pergunta, label: Pergunta, type: string, required: true }
       - { name: resposta, label: Resposta, type: text, required: true }
-      - { name: servicos, label: "Aparece nas páginas (passagens-com-milhas, pacotes, aluguel-de-carros, mentoria-em-milhas, empresas)", type: string, list: true }
+      - { name: servicos, label: "Aparece nas páginas (passagens-aereas, pacotes, aluguel-de-carros, mentoria-de-viagens, empresas)", type: string, list: true }
       - { name: ordem, label: Ordem, type: number, default: 0 }
       - { name: revisar, label: Resposta ainda a confirmar, type: boolean, default: false }
 

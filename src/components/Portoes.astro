@@ -8,10 +8,10 @@ import { servicos } from '../data/servicos';
 
 // Resumo curto de cada serviço na home; o resto do conteúdo vem de data/servicos.ts.
 const resumos: Record<string, string> = {
-  'passagens-com-milhas': 'Passagem mais barata usando milhas, sem você precisar ter milhas. Nacional e internacional, com parcelamento.',
+  'passagens-aereas': 'Voos nacionais e internacionais pelo melhor preço que a nossa equipe encontrar, com parcelamento.',
   pacotes: 'Passagem, hotel e passeios num pacote só, montado para o seu jeito de viajar.',
   'aluguel-de-carros': 'Carro reservado para retirar no aeroporto, do popular ao SUV.',
-  'mentoria-em-milhas': 'Para quem quer aprender a juntar e usar as próprias milhas, ou prefere que alguém cuide disso.',
+  'mentoria-de-viagens': 'Para quem quer aprender a planejar e emitir as próprias passagens, ou prefere que alguém cuide disso.',
 };
 const portoes = servicos.map((s) => ({
   portao: s.portao, nome: s.nome, href: caminho(`/${s.slug}`), ref: s.ref, texto: resumos[s.slug], mensagem: s.mensagem,

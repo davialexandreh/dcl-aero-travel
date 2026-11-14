@@ -1,0 +1,9 @@
+{
+  "pergunta": "Como a DCL encontra o melhor preço?",
+  "resposta": "Nossa equipe compara as opções de voo e de tarifa disponíveis para as suas datas e te passa a melhor condição. Você paga à DCL, com parcelamento no cartão, e recebe a passagem emitida no seu nome.",
+  "servicos": [
+    "passagens-aereas"
+  ],
+  "ordem": 1,
+  "revisar": true
+}

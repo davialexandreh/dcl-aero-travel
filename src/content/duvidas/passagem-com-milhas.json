@@ -1,9 +1,0 @@
-{
-  "pergunta": "Como funciona a passagem com milhas?",
-  "resposta": "Você não precisa ter milhas. A DCL encontra a passagem emitida com milhas ou pela melhor tarifa disponível, e você paga a DCL, com parcelamento no cartão.",
-  "servicos": [
-    "passagens-com-milhas"
-  ],
-  "ordem": 1,
-  "revisar": true
-}
