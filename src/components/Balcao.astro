@@ -1,0 +1,41 @@
+---
+import IconeWhatsApp from './IconeWhatsApp.astro';
+// Balcão de informações: perguntas frequentes que abrem no lugar.
+import { ChevronDown } from '@lucide/astro';
+import { linkWhatsApp } from '../lib/whatsapp';
+
+interface Duvida {
+  id: string;
+  data: { pergunta: string; resposta: string };
+}
+interface Props {
+  duvidas: Duvida[];
+  titulo?: string;
+  ref: string;
+}
+const { duvidas, titulo = 'Balcão de informações', ref } = Astro.props;
+---
+<div class="rounded-md bg-profundo shadow-[0_18px_40px_rgb(0_0_0/0.35)]">
+  <header class="border-b border-linha px-4 pt-4 pb-3 sm:px-6">
+    <h2 class="font-painel text-[1.75rem] font-semibold tracking-[0.08em] uppercase sm:text-[2rem]">{titulo}</h2>
+  </header>
+  <ul class="divide-y divide-linha" role="list">
+    {duvidas.map((d) => (
+      <li>
+        <details class="group">
+          <summary class="flex items-center justify-between gap-4 px-4 py-5 transition-colors hover:bg-white/[0.04] sm:px-6">
+            <h3 class="font-painel text-[1.1875rem] font-semibold tracking-[0.02em] sm:text-[1.3125rem]">{d.data.pergunta}</h3>
+            <ChevronDown size={20} class="shrink-0 text-tinta-suave transition-transform duration-300 group-open:rotate-180" aria-hidden="true" />
+          </summary>
+          <p class="max-w-[64ch] px-4 pb-6 text-tinta-suave sm:px-6">{d.data.resposta}</p>
+        </details>
+      </li>
+    ))}
+  </ul>
+  <footer class="flex flex-wrap items-center justify-between gap-4 border-t border-linha px-4 py-4 sm:px-6">
+    <p class="text-[0.9375rem] text-tinta-suave">Não achou a sua dúvida? Fale com a nossa equipe.</p>
+    <a class="botao botao-contorno min-h-11 px-4 text-[1.0625rem]" href={linkWhatsApp('Olá! Vim pelo site da DCL e tenho uma dúvida.', ref)}>
+      <IconeWhatsApp size={18} /> Tirar dúvida
+    </a>
+  </footer>
+</div>

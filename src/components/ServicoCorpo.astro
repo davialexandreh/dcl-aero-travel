@@ -1,0 +1,39 @@
+---
+import { Check } from '@lucide/astro';
+import PainelLista from './PainelLista.astro';
+
+interface Props {
+  etapas: { rotulo: string; texto: string }[];
+  inclui: string[];
+  modalidades?: { nome: string; texto: string }[];
+}
+const { etapas, inclui, modalidades = [] } = Astro.props;
+---
+<section class="bg-marinho" aria-labelledby="como-funciona">
+  <div class="mx-auto grid max-w-[78rem] gap-12 px-4 pb-20 sm:px-6 md:pb-28 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16 lg:px-8">
+    <div>
+      <h2 id="como-funciona" class="text-[2rem] sm:text-[2.75rem]">Como funciona</h2>
+      {modalidades.length > 0 && (
+        <dl class="mt-8 space-y-6">
+          {modalidades.map((m) => (
+            <div>
+              <dt class="font-painel text-[1.375rem] font-semibold tracking-[0.04em] uppercase">{m.nome}</dt>
+              <dd class="mt-1 max-w-[46ch] text-tinta-suave">{m.texto}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
+      {inclui.length > 0 && (
+        <ul class="mt-8 space-y-3" role="list">
+          {inclui.map((i) => (
+            <li class="flex items-start gap-3">
+              <Check size={20} class="mt-1 shrink-0" aria-hidden="true" />
+              <span>{i}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+    <PainelLista linhas={etapas} colunaRotulo="Etapa" colunaTexto="O que acontece" class="self-start" />
+  </div>
+</section>

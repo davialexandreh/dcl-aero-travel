@@ -1,0 +1,30 @@
+---
+import PainelLista from './PainelLista.astro';
+
+// A viagem do cliente como status de voo. Cada etapa diz o que a DCL faz.
+const etapas = [
+  { rotulo: 'Cotação', texto: 'Você conta o destino e as datas. Nossa equipe procura o melhor voo e a melhor condição, com milhas ou tarifa.' },
+  { rotulo: 'Emissão', texto: 'A DCL emite a passagem e manda tudo pelo WhatsApp, com parcelamento no cartão.' },
+  { rotulo: 'Check-in', texto: 'O check-in fica com a DCL. Você só confere o cartão de embarque.' },
+  { rotulo: 'Embarque', texto: 'Durante a viagem, nossa equipe acompanha se está tudo correndo bem.' },
+  { rotulo: 'Volta', texto: 'Na volta, o check-out também fica com a DCL, até você chegar em casa.' },
+];
+---
+<section class="bg-marinho" aria-labelledby="jornada-titulo">
+  <div class="mx-auto grid max-w-[78rem] gap-12 px-4 py-20 sm:px-6 md:py-28 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-16 lg:px-8">
+    <div>
+      <h2 id="jornada-titulo" class="text-[2.25rem] sm:text-[3rem] lg:text-[3.5rem]">Sua viagem, acompanhada</h2>
+      <p class="mt-6 max-w-[46ch] text-lg text-tinta-suave">
+        A mesma equipe cuida de tudo, do começo ao fim. Quem cota é quem emite, faz o check-in e responde no meio da viagem, direto no seu WhatsApp.
+      </p>
+      <figure class="mt-10 max-w-[12rem] sm:max-w-[14rem] lg:max-w-[16rem]">
+        <div class="grid aspect-[4/5] place-items-center rounded-md border border-dashed border-linha bg-white/[0.03] p-6 text-center">
+          <p class="font-painel text-sm font-semibold tracking-[0.12em] uppercase text-tinta-suave">
+            Foto de viagem<br />(aguardando envio)
+          </p>
+        </div>
+      </figure>
+    </div>
+    <PainelLista linhas={etapas} colunaRotulo="Status" colunaTexto="O que a DCL faz" class="self-center" />
+  </div>
+</section>

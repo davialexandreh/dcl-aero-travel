@@ -1,0 +1,46 @@
+---
+// Páginas de leitura (privacidade, termos): fundo claro e medida de texto confortável.
+import Base from './Base.astro';
+
+interface Props {
+  titulo: string;
+  descricao: string;
+  h1: string;
+  atualizado: string;
+}
+const { titulo, descricao, h1, atualizado } = Astro.props;
+---
+<Base titulo={titulo} descricao={descricao}>
+  <article class="claro bg-branco text-marinho">
+    <div class="mx-auto max-w-[78rem] px-4 py-16 sm:px-6 md:py-24 lg:px-8">
+      <header class="max-w-[68ch]">
+        <h1 class="text-[2.25rem] sm:text-[3.25rem]">{h1}</h1>
+        <p class="mt-4 text-[0.9375rem] text-marinho-suave">Última atualização: {atualizado}</p>
+      </header>
+      <div class="documento mt-12 max-w-[68ch]">
+        <slot />
+      </div>
+    </div>
+  </article>
+</Base>
+
+<style>
+  .documento :global(h2) {
+    margin-top: 2.75rem;
+    margin-bottom: 0.75rem;
+    font-size: 1.625rem;
+  }
+  .documento :global(p),
+  .documento :global(li) {
+    color: var(--color-marinho-suave);
+  }
+  .documento :global(p + p) { margin-top: 1rem; }
+  .documento :global(ul) {
+    margin-top: 0.75rem;
+    padding-left: 1.25rem;
+    list-style: disc;
+  }
+  .documento :global(li + li) { margin-top: 0.5rem; }
+  .documento :global(a) { color: var(--color-marinho); text-decoration: underline; }
+  .documento :global(strong) { color: var(--color-marinho); font-weight: 600; }
+</style>

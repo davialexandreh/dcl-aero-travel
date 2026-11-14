@@ -1,0 +1,25 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import PaginaTopo from '../components/PaginaTopo.astro';
+import Balcao from '../components/Balcao.astro';
+
+const duvidas = (await getCollection('duvidas')).sort((a, b) => a.data.ordem - b.data.ordem);
+---
+<Base
+  titulo="Dúvidas frequentes | DCL Aero Travel"
+  descricao="Como funciona a passagem com milhas, cancelamento, remarcação, viagem com pet, pagamento e check-in na DCL Aero Travel."
+>
+  <PaginaTopo
+    titulo="Dúvidas frequentes"
+    lede="As perguntas que mais chegam no WhatsApp. Se a sua não estiver aqui, pergunte direto à nossa equipe."
+    mensagem="Olá! Vim pelo site da DCL e tenho uma dúvida."
+    ref="duvidas"
+    rotuloBotao="Tirar dúvida"
+  />
+  <section class="bg-marinho" aria-label="Perguntas e respostas">
+    <div class="mx-auto max-w-[78rem] px-4 pb-20 sm:px-6 md:pb-28 lg:px-8">
+      <Balcao duvidas={duvidas} ref="duvidas-balcao" />
+    </div>
+  </section>
+</Base>

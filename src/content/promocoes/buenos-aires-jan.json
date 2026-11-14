@@ -1,0 +1,10 @@
+{
+  "destino": "BUENOS AIRES",
+  "saida": "São Paulo (GRU)",
+  "ida": "2027-01-14",
+  "volta": "2027-01-19",
+  "hotel": "Hotel em Palermo",
+  "precoPorPessoa": 2490,
+  "parcelas": 12,
+  "exemplo": true
+}

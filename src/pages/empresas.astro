@@ -1,0 +1,51 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import PaginaTopo from '../components/PaginaTopo.astro';
+import ServicoCorpo from '../components/ServicoCorpo.astro';
+import Balcao from '../components/Balcao.astro';
+import ChamadaFinal from '../components/ChamadaFinal.astro';
+
+const mensagem = 'Olá! Vim pelo site da DCL e quero falar sobre as viagens da minha empresa.';
+const etapas = [
+  { rotulo: 'Pedido', texto: 'Quem viaja ou quem organiza manda o pedido pelo WhatsApp ou por e-mail.' },
+  { rotulo: 'Cotação', texto: 'Nossa equipe responde com as opções de voo, hotel e carro.' },
+  { rotulo: 'Emissão', texto: 'Aprovado, a DCL emite, faz o check-in e manda os documentos para quem vai viajar.' },
+  { rotulo: 'Imprevisto', texto: 'Mudou a reunião? A remarcação fica com a mesma equipe que emitiu.' },
+];
+const inclui = [
+  'Passagens, hotéis e carros',
+  'Um contato só para a empresa toda',
+  'Para empresas que viajam toda semana ou a cada quinze dias',
+  'Check-in e acompanhamento de cada viagem',
+];
+// Nomes de empresas atendidas só entram com autorização por escrito.
+const duvidas = (await getCollection('duvidas'))
+  .filter((d) => d.data.servicos.includes('empresas') || ['pagamento', 'pessoa'].includes(d.id))
+  .sort((a, b) => a.data.ordem - b.data.ordem);
+---
+<Base
+  titulo="Viagens corporativas | DCL Aero Travel"
+  descricao="Passagens, hotéis e carros para a sua empresa, com um contato só e acompanhamento de cada viagem."
+>
+  <PaginaTopo
+    titulo="Viagens da sua empresa, com um contato só"
+    lede="Passagens, hotéis e carros para a equipe, com o mesmo acompanhamento de perto: quem cota é quem resolve."
+    mensagem={mensagem}
+    ref="empresas"
+    rotuloBotao="Cotar no WhatsApp"
+  />
+  <ServicoCorpo etapas={etapas} inclui={inclui} />
+  <section class="bg-marinho" aria-label="Dúvidas frequentes">
+    <div class="mx-auto max-w-[78rem] px-4 pb-20 sm:px-6 md:pb-28 lg:px-8">
+      <Balcao duvidas={duvidas} ref="empresas-duvida" />
+    </div>
+  </section>
+  <ChamadaFinal
+    titulo="Vamos cuidar das viagens da sua equipe"
+    texto="Conte quantas pessoas viajam e com que frequência. A DCL te explica como funciona o atendimento."
+    mensagem={mensagem}
+    ref="empresas-final"
+    rotuloBotao="Cotar no WhatsApp"
+  />
+</Base>

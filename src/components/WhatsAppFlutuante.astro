@@ -1,0 +1,30 @@
+---
+import { caminho } from '../lib/caminho';
+import { linkWhatsApp } from '../lib/whatsapp';
+// Atalho fixo para o WhatsApp no canto inferior direito, em todas as páginas.
+// Fica abaixo do header (z-20), então o menu do celular aberto passa por cima dele.
+const link = linkWhatsApp('Olá! Vim pelo site da DCL e quero uma cotação.', 'flutuante');
+---
+<a
+  href={link}
+  class="whats-flutuante fixed right-4 bottom-4 z-20 block size-14 rounded-full sm:right-6 sm:bottom-6 sm:size-16"
+  aria-label="Conversar com a DCL no WhatsApp"
+  transition:persist="whatsapp-flutuante"
+>
+  <img src={caminho('/marca/whatsapp.webp')} width="128" height="128" alt="" class="size-full" />
+</a>
+
+<style>
+  .whats-flutuante {
+    filter: drop-shadow(0 6px 12px rgb(0 0 0 / 0.35));
+    transition: transform 200ms var(--ease-placa), filter 200ms var(--ease-placa);
+  }
+  .whats-flutuante:hover {
+    transform: translateY(-2px);
+    filter: drop-shadow(0 10px 18px rgb(0 0 0 / 0.4));
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .whats-flutuante { transition: none; }
+    .whats-flutuante:hover { transform: none; }
+  }
+</style>

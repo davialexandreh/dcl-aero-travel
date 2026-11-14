@@ -1,0 +1,31 @@
+---
+// Painel de duas colunas: rótulo em placas e texto em linguagem comum.
+import Placas from './Placas.astro';
+
+interface Linha {
+  rotulo: string;
+  texto: string;
+}
+interface Props {
+  linhas: Linha[];
+  colunaRotulo: string;
+  colunaTexto: string;
+  class?: string;
+}
+const { linhas, colunaRotulo, colunaTexto, class: classe = '' } = Astro.props;
+const largura = Math.max(...linhas.map((l) => l.rotulo.length));
+---
+<div class={`rounded-md bg-profundo shadow-[0_18px_40px_rgb(0_0_0/0.35)] ${classe}`}>
+  <div class="grid grid-cols-[auto_minmax(0,1fr)] gap-x-6 border-b border-linha px-4 pt-4 pb-3 text-tinta-fraca sm:px-6" aria-hidden="true">
+    <span class="rotulo-painel">{colunaRotulo}</span>
+    <span class="rotulo-painel">{colunaTexto}</span>
+  </div>
+  <ol class="divide-y divide-linha" role="list">
+    {linhas.map((l) => (
+      <li class="grid gap-x-6 gap-y-2 px-4 py-5 sm:grid-cols-[auto_minmax(0,1fr)] sm:items-center sm:px-6">
+        <h3 class="font-normal"><Placas texto={l.rotulo} minimo={largura} class="placas-justas text-[1rem] sm:text-[1.15rem]" /></h3>
+        <p class="max-w-[52ch] text-tinta-suave">{l.texto}</p>
+      </li>
+    ))}
+  </ol>
+</div>

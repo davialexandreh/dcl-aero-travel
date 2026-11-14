@@ -1,0 +1,76 @@
+---
+import { caminho, semBase } from '../lib/caminho';
+import '../styles/global.css';
+import Cabecalho from '../components/Cabecalho.astro';
+import Rodape from '../components/Rodape.astro';
+import Cookies from '../components/Cookies.astro';
+import Voo from '../components/Voo.astro';
+import WhatsAppFlutuante from '../components/WhatsAppFlutuante.astro';
+import { ClientRouter } from 'astro:transitions';
+import { site } from '../config/site';
+
+interface Props {
+  titulo: string;
+  descricao: string;
+}
+const { titulo, descricao } = Astro.props;
+const canonico = new URL(semBase(Astro.url.pathname), site.url).href;
+---
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{titulo}</title>
+    <meta name="description" content={descricao} />
+    <link rel="canonical" href={canonico} />
+    <link rel="icon" type="image/png" href={caminho('/favicon.png')} />
+    <link rel="apple-touch-icon" href={caminho('/apple-touch-icon.png')} />
+    <meta name="theme-color" content="#2c4156" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_BR" />
+    <meta property="og:title" content={titulo} />
+    <meta property="og:description" content={descricao} />
+    <meta property="og:url" content={canonico} />
+    <meta property="og:image" content={new URL('/apple-touch-icon.png', site.url).href} />
+    <ClientRouter />
+  </head>
+  <body class="min-h-dvh antialiased">
+    <Voo />
+    <a href="#conteudo" class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded focus:bg-branco focus:px-4 focus:py-2 focus:text-marinho">
+      Pular para o conteúdo
+    </a>
+    <Cabecalho />
+    <main id="conteudo">
+      <slot />
+    </main>
+    <Rodape />
+    <WhatsAppFlutuante />
+    <Cookies />
+    <script>
+      // Origem da visita (UTM) vira o prefixo do código ref: em todos os links de WhatsApp.
+      const ORIGENS: Record<string, string> = { instagram: 'ig', ig: 'ig', grupo: 'grupo', whatsapp_grupo: 'grupo' };
+      let origem = 'site';
+      try {
+        const utm = new URLSearchParams(location.search).get('utm_source')?.toLowerCase() ?? '';
+        if (ORIGENS[utm]) sessionStorage.setItem('dcl-origem', ORIGENS[utm]);
+        origem = sessionStorage.getItem('dcl-origem') ?? 'site';
+      } catch {}
+      // Roda a cada página: com a troca sem recarregar, os links novos chegam a cada navegação.
+      document.addEventListener('astro:page-load', () => {
+        if (origem === 'site') return;
+        document.querySelectorAll<HTMLAnchorElement>('a[href^="https://wa.me/"]').forEach((a) => {
+          a.href = a.href.replace(encodeURIComponent('(ref: site-'), encodeURIComponent(`(ref: ${origem}-`));
+        });
+      });
+      // Evento de clique no WhatsApp, por serviço e origem (só envia se o GA estiver carregado).
+      document.addEventListener('click', (e) => {
+        const a = (e.target as HTMLElement).closest<HTMLAnchorElement>('a[href^="https://wa.me/"]');
+        if (!a) return;
+        const ref = decodeURIComponent(a.href).match(/\(ref: ([^)]+)\)/)?.[1] ?? '';
+        const gtag = (window as any).gtag;
+        if (typeof gtag === 'function') gtag('event', 'whatsapp_click', { ref, origem });
+      });
+    </script>
+  </body>
+</html>

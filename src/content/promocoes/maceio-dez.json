@@ -1,0 +1,10 @@
+{
+  "destino": "MACEIÓ",
+  "saida": "São Paulo (GRU)",
+  "ida": "2026-11-18",
+  "volta": "2026-11-23",
+  "hotel": "Hotel na orla de Ponta Verde",
+  "precoPorPessoa": 1890,
+  "parcelas": 10,
+  "exemplo": true
+}

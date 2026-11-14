@@ -1,0 +1,10 @@
+{
+  "destino": "PORTO DE GALINHAS",
+  "saida": "São Paulo (GRU)",
+  "ida": "2027-01-22",
+  "volta": "2027-01-28",
+  "hotel": "Resort pé na areia, meia pensão",
+  "precoPorPessoa": 3190,
+  "parcelas": 12,
+  "exemplo": true
+}

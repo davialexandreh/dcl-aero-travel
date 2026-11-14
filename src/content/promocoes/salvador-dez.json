@@ -1,0 +1,10 @@
+{
+  "destino": "SALVADOR",
+  "saida": "São Paulo (GRU)",
+  "ida": "2026-12-05",
+  "volta": "2026-12-10",
+  "hotel": "Pousada no Rio Vermelho",
+  "precoPorPessoa": 1690,
+  "parcelas": 10,
+  "exemplo": true
+}

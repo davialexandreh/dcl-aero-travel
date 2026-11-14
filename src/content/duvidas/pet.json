@@ -1,0 +1,10 @@
+{
+  "pergunta": "Posso viajar com o meu pet?",
+  "resposta": "Depende da companhia e do destino. Conte para a nossa equipe a espécie, o porte e o peso do animal antes da cotação, e ela confere as regras e as taxas.",
+  "servicos": [
+    "passagens-com-milhas",
+    "pacotes"
+  ],
+  "ordem": 5,
+  "revisar": true
+}

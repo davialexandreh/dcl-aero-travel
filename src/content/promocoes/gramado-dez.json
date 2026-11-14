@@ -1,0 +1,10 @@
+{
+  "destino": "GRAMADO",
+  "saida": "São Paulo (CGH)",
+  "ida": "2026-12-12",
+  "volta": "2026-12-16",
+  "hotel": "Hotel no centro, com café da manhã",
+  "precoPorPessoa": 2290,
+  "parcelas": 10,
+  "exemplo": true
+}

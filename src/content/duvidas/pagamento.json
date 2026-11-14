@@ -1,0 +1,12 @@
+{
+  "pergunta": "Como faço o pagamento?",
+  "resposta": "No cartão de crédito, com parcelamento. Outras formas de pagamento você combina direto com a nossa equipe.",
+  "servicos": [
+    "passagens-com-milhas",
+    "pacotes",
+    "aluguel-de-carros",
+    "mentoria-em-milhas"
+  ],
+  "ordem": 6,
+  "revisar": true
+}

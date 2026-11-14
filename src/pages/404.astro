@@ -1,0 +1,23 @@
+---
+import { caminho } from '../lib/caminho';
+import { PlaneTakeoff } from '@lucide/astro';
+import IconeWhatsApp from '../components/IconeWhatsApp.astro';
+import Base from '../layouts/Base.astro';
+import Placas from '../components/Placas.astro';
+import { linkWhatsApp } from '../lib/whatsapp';
+---
+<Base titulo="Página não encontrada | DCL Aero Travel" descricao="Esta página não existe mais.">
+  <section class="bg-marinho">
+    <div class="mx-auto max-w-[78rem] px-4 py-24 sm:px-6 md:py-32 lg:px-8">
+      <Placas texto="Voo cancelado" class="text-[1.25rem] sm:text-[1.75rem]" />
+      <h1 class="mt-8 max-w-[18ch] text-[2.25rem] sm:text-[3.25rem]">Esta página não existe mais</h1>
+      <p class="mt-5 max-w-[48ch] text-lg text-tinta-suave">Mas a sua viagem continua de pé. Veja as promoções que estão valendo ou fale direto com a nossa equipe.</p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a class="botao botao-claro" href={caminho('/#partidas')}><PlaneTakeoff size={20} aria-hidden="true" /> Ver as partidas</a>
+        <a class="botao botao-contorno" href={linkWhatsApp('Olá! Vim pelo site da DCL e quero uma cotação.', '404')}>
+          <IconeWhatsApp size={20} /> Cotar no WhatsApp
+        </a>
+      </div>
+    </div>
+  </section>
+</Base>

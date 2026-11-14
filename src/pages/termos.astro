@@ -1,0 +1,42 @@
+---
+// RASCUNHO: precisa de revisão jurídica e dos modelos de contrato do cliente antes de publicar.
+import Documento from '../layouts/Documento.astro';
+import { site } from '../config/site';
+---
+<Documento
+  titulo="Termos de uso | DCL Aero Travel"
+  descricao="Condições de uso do site da DCL Aero Travel e das promoções divulgadas nele."
+  h1="Termos de uso"
+  atualizado="novembro de 2026"
+>
+  <p>
+    Ao usar o site da {site.nome}, você concorda com as condições abaixo.
+  </p>
+
+  <h2>O que é o site</h2>
+  <p>
+    O site apresenta os serviços e as promoções da {site.nome}, CNPJ {site.cnpj}. Nenhuma compra é feita pelo site: toda cotação e contratação acontece no atendimento pelo WhatsApp {site.whatsappExibicao} ou pelo e-mail {site.email}.
+  </p>
+
+  <h2>Preços e promoções</h2>
+  <ul>
+    <li>Os valores são por pessoa e estão sujeitos a disponibilidade e alteração até a emissão.</li>
+    <li>Cada promoção sai do site 5 dias antes da data de ida.</li>
+    <li>O valor final, as condições de pagamento e as regras da tarifa são confirmados no atendimento, antes da emissão.</li>
+  </ul>
+
+  <h2>Cancelamento e alteração</h2>
+  <p>
+    As regras de cancelamento, remarcação e reembolso dependem da companhia aérea, do hotel e da tarifa escolhida, e são informadas antes da emissão.
+  </p>
+
+  <h2>Conteúdo do site</h2>
+  <p>
+    Textos, marca e imagens do site pertencem à {site.nome} ou a quem as cedeu, e não podem ser copiados sem autorização.
+  </p>
+
+  <h2>Contato</h2>
+  <p>
+    Dúvidas sobre estes termos: <a href={`mailto:${site.email}`}>{site.email}</a>.
+  </p>
+</Documento>

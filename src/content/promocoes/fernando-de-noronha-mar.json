@@ -1,0 +1,10 @@
+{
+  "destino": "FERNANDO DE NORONHA",
+  "saida": "São Paulo (GRU)",
+  "ida": "2027-03-10",
+  "volta": "2027-03-15",
+  "hotel": "Pousada na Vila dos Remédios",
+  "precoPorPessoa": 5890,
+  "parcelas": 12,
+  "exemplo": true
+}

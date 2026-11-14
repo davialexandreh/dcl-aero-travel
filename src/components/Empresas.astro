@@ -1,0 +1,24 @@
+---
+import { caminho } from '../lib/caminho';
+import IconeWhatsApp from './IconeWhatsApp.astro';
+import { ArrowRight } from '@lucide/astro';
+import { linkWhatsApp } from '../lib/whatsapp';
+---
+<section class="claro bg-branco text-marinho" aria-labelledby="empresas-titulo">
+  <div class="mx-auto grid max-w-[78rem] gap-10 px-4 py-20 sm:px-6 md:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] md:items-end md:py-24 lg:px-8">
+    <div>
+      <h2 id="empresas-titulo" class="text-[2.25rem] sm:text-[3rem]">Viagens da sua empresa, com um contato só</h2>
+      <p class="mt-5 max-w-[52ch] text-lg text-marinho-suave">
+        Passagens, hotéis e carros para a equipe, com o mesmo acompanhamento de perto: quem cota é quem resolve.
+      </p>
+    </div>
+    <div class="flex flex-wrap gap-3 md:justify-end">
+      <a class="botao botao-escuro" href={linkWhatsApp('Olá! Vim pelo site da DCL e quero falar sobre as viagens da minha empresa.', 'empresas')}>
+        <IconeWhatsApp size={20} /> Cotar no WhatsApp
+      </a>
+      <a class="botao botao-contorno" href={caminho('/empresas')}>
+        <ArrowRight size={20} aria-hidden="true" /> Como funciona
+      </a>
+    </div>
+  </div>
+</section>

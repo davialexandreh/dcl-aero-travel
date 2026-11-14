@@ -1,0 +1,10 @@
+{
+  "destino": "SANTIAGO",
+  "saida": "São Paulo (GRU)",
+  "ida": "2027-02-06",
+  "volta": "2027-02-11",
+  "hotel": "Hotel em Providencia",
+  "precoPorPessoa": 2790,
+  "parcelas": 12,
+  "exemplo": true
+}

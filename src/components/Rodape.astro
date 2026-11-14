@@ -1,0 +1,57 @@
+---
+import { caminho } from '../lib/caminho';
+import { Mail } from '@lucide/astro';
+import IconeWhatsApp from './IconeWhatsApp.astro';
+import IconeInstagram from './IconeInstagram.astro';
+import { site } from '../config/site';
+import { linkWhatsApp } from '../lib/whatsapp';
+
+const ano = new Date().getFullYear();
+---
+<footer class="bg-marinho">
+  <div class="mx-auto max-w-[78rem] px-4 sm:px-6 lg:px-8">
+    <div class="grid gap-10 border-b border-linha py-16 md:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] md:items-end">
+      <div>
+        <h2 class="max-w-[16ch] text-[2.25rem] sm:text-[3rem]">Receba as próximas partidas antes de todo mundo</h2>
+        <p class="mt-4 max-w-[48ch] text-tinta-suave">As promoções saem primeiro no grupo do WhatsApp.</p>
+      </div>
+      <div class="flex flex-wrap gap-3 md:justify-end">
+        {site.grupoPromocoes ? (
+          <a class="botao botao-claro" href={site.grupoPromocoes}><IconeWhatsApp size={20} /> Quero entrar no grupo</a>
+        ) : (
+          <a class="botao botao-claro" href={linkWhatsApp('Olá! Quero entrar no grupo de promoções da DCL.', 'grupo')}>
+            <IconeWhatsApp size={20} /> Quero entrar no grupo
+          </a>
+        )}
+      </div>
+    </div>
+
+    <div class="grid gap-10 py-12 md:grid-cols-[auto_minmax(0,1fr)_minmax(0,1fr)]">
+      <img src={caminho('/marca/dcl-logo-branco.webp')} alt="DCL Aero Travel" width="760" height="640" class="h-24 w-auto" loading="lazy" />
+      <div class="text-[0.9375rem] text-tinta-suave">
+        <p class="rotulo-painel mb-3 text-branco">Atendimento</p>
+        <ul class="grid gap-2" role="list">
+          <li><a href={linkWhatsApp('Olá! Vim pelo site da DCL.', 'rodape')} class="inline-flex items-center gap-2.5 hover:text-branco"><IconeWhatsApp size={16} class="mx-px" /><span><span class="sr-only">WhatsApp </span>{site.whatsappExibicao}</span></a></li>
+          <li><a href={`mailto:${site.email}`} class="inline-flex items-center gap-2.5 hover:text-branco"><Mail size={18} class="shrink-0" aria-hidden="true" /><span class="sr-only">E-mail </span>{site.email}</a></li>
+          <li><a href={site.instagram} rel="noopener" class="inline-flex items-center gap-2.5 hover:text-branco"><IconeInstagram size={18} /><span class="sr-only">Instagram </span>@dclaero_travel</a></li>
+        </ul>
+      </div>
+      <div class="text-[0.9375rem] text-tinta-suave">
+        <p class="rotulo-painel mb-3 text-branco">Empresa</p>
+        <p>{site.nome}</p>
+        <p class="tabular-nums">CNPJ {site.cnpj}</p>
+        <p class="tabular-nums">Cadastur {site.cadastur || '(a confirmar)'}</p>
+      </div>
+    </div>
+
+    <!-- Espaço extra embaixo: o botão flutuante do WhatsApp não cobre os links legais no fim da página. -->
+    <div class="flex flex-wrap items-center justify-between gap-4 border-t border-linha pt-6 pb-24 sm:pb-28 text-[0.875rem] text-tinta-suave">
+      <p>© {ano} {site.nome}</p>
+      <ul class="flex flex-wrap gap-5" role="list">
+        <li><a href={caminho('/privacidade')} class="hover:text-branco">Privacidade</a></li>
+        <li><a href={caminho('/termos')} class="hover:text-branco">Termos de uso</a></li>
+        <li><a href={caminho('/duvidas')} class="hover:text-branco">Dúvidas</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,324 @@
+@import "tailwindcss";
+
+@import "@fontsource/gilda-display/400.css";
+@import "@fontsource/barlow/400.css";
+@import "@fontsource/barlow/500.css";
+@import "@fontsource/barlow/600.css";
+@import "@fontsource/barlow-condensed/500.css";
+@import "@fontsource/barlow-condensed/600.css";
+@import "@fontsource/barlow-condensed/700.css";
+
+/* Só as duas cores do logo. "profundo" é o mesmo marinho, mais escuro, para as placas. */
+@theme {
+  --color-marinho: #2c4156;
+  --color-profundo: #101a24;
+  --color-placa-topo: #2a3e52;
+  --color-placa: #22354a;
+  --color-branco: #ffffff;
+  --color-tinta-suave: rgb(255 255 255 / 0.74);
+  --color-tinta-fraca: rgb(255 255 255 / 0.5);
+  --color-linha: rgb(255 255 255 / 0.14);
+  --color-marinho-suave: rgb(44 65 86 / 0.78);
+  --color-marinho-linha: rgb(44 65 86 / 0.16);
+
+  --font-titulo: "Gilda Display", "Times New Roman", serif;
+  --font-texto: "Barlow", system-ui, sans-serif;
+  --font-painel: "Barlow Condensed", "Arial Narrow", sans-serif;
+
+  --ease-placa: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  html {
+    background: var(--color-marinho);
+    color: var(--color-branco);
+    font-family: var(--font-texto);
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+    /* Âncoras (/#partidas, /#servicos) param abaixo do header fixo. */
+    scroll-padding-top: 4.5rem;
+    scrollbar-color: rgb(255 255 255 / 0.35) var(--color-profundo);
+  }
+  body {
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    text-rendering: optimizeLegibility;
+  }
+  h1, h2, h3 {
+    font-family: var(--font-titulo);
+    font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  p { text-wrap: pretty; }
+  ::selection {
+    background: var(--color-branco);
+    color: var(--color-marinho);
+  }
+  .claro ::selection {
+    background: var(--color-marinho);
+    color: var(--color-branco);
+  }
+  :focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+  a { text-underline-offset: 0.22em; text-decoration-thickness: 1px; }
+  summary { list-style: none; cursor: pointer; }
+  summary::-webkit-details-marker { display: none; }
+}
+
+@layer components {
+  /* Superfície clara (painel de partidas, serviços, empresas): as mesmas peças com a tinta invertida para o marinho.
+     Tons de apoio são o próprio marinho com transparência, nunca um cinza neutro. */
+  .claro {
+    --color-tinta-suave: rgb(44 65 86 / 0.85);
+    --color-tinta-fraca: rgb(44 65 86 / 0.72);
+    --color-linha: rgb(44 65 86 / 0.14);
+    --color-placa-topo: color-mix(in srgb, var(--color-marinho) 6%, white);
+    --color-placa: color-mix(in srgb, var(--color-marinho) 12%, white);
+    --placa-tinta: var(--color-marinho);
+    /* A dobra clara corta a letra como a fresta entre as abas; escura, pareceria texto riscado. */
+    --placa-dobra: rgb(255 255 255 / 0.95);
+    --placa-sombra: 0 0.05em 0.1em rgb(44 65 86 / 0.22);
+  }
+  /* Placa split-flap: uma letra por placa, com a dobra no meio. */
+  .placas {
+    display: inline-flex;
+    gap: 0.12em;
+    font-family: var(--font-painel);
+    font-weight: 600;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .placa {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    width: 0.78em;
+    height: 1.22em;
+    border-radius: 0.09em;
+    background: linear-gradient(var(--color-placa-topo) 50%, var(--color-placa) 50%);
+    color: var(--placa-tinta, var(--color-branco));
+    box-shadow: var(--placa-sombra, 0 0.06em 0.12em rgb(0 0 0 / 0.45));
+    overflow: hidden;
+  }
+  .placa::after {
+    content: "";
+    position: absolute;
+    inset: 50% 0 auto;
+    height: 1px;
+    background: var(--placa-dobra, rgb(0 0 0 / 0.55));
+  }
+  .placa[data-vazia] { color: transparent; }
+  /* A aba de cima cai na dobradiça e revela a letra nova. */
+  .placa::before {
+    content: attr(data-de);
+    position: absolute;
+    inset: 0 0 50% 0;
+    z-index: 1;
+    overflow: hidden;
+    text-align: center;
+    line-height: 1.22em;
+    color: var(--placa-tinta, var(--color-branco));
+    background: var(--color-placa-topo);
+    transform-origin: 50% 100%;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .placa.girando::before { animation: aba 100ms var(--ease-placa) forwards; }
+  /* Linhas de painel no celular não completam a régua com placas vazias. */
+  @media (max-width: 47.99rem) {
+    .placas-justas .placa-sobra { display: none; }
+  }
+
+  .rotulo-painel {
+    font-family: var(--font-painel);
+    font-weight: 600;
+    font-size: 0.8125rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .botao {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    min-height: 3rem;
+    padding: 0.75rem 1.4rem;
+    border-radius: 0.25rem;
+    font-family: var(--font-painel);
+    /* Botão fala como gente, em caixa normal; caixa alta espaçada fica para o que é dado de painel. */
+    font-weight: 600;
+    font-size: 1.1875rem;
+    letter-spacing: 0.01em;
+    text-decoration: none;
+    transition: transform 200ms var(--ease-placa), box-shadow 200ms var(--ease-placa), background-color 200ms;
+  }
+  .botao-claro {
+    background: var(--color-branco);
+    color: var(--color-marinho);
+    box-shadow: 0 2px 6px rgb(0 0 0 / 0.25);
+  }
+  .botao-claro:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgb(0 0 0 / 0.3); }
+  .botao-escuro {
+    background: var(--color-marinho);
+    color: var(--color-branco);
+    box-shadow: 0 2px 6px rgb(22 34 46 / 0.25);
+  }
+  .botao-escuro:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgb(22 34 46 / 0.3); }
+  .botao-contorno {
+    border: 1px solid rgb(255 255 255 / 0.5);
+    color: var(--color-branco);
+  }
+  .botao-contorno:hover { background: rgb(255 255 255 / 0.08); }
+  /* Pressionado: no celular não há hover, então o toque precisa de resposta própria. */
+  .botao:active {
+    transform: translateY(1px) scale(0.98);
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.25);
+    transition-duration: 60ms;
+  }
+  .botao-contorno:active { background: rgb(255 255 255 / 0.14); }
+  .claro .botao-contorno:active { background: rgb(44 65 86 / 0.12); }
+  /* Inversão: no claro, o botão principal vira marinho e o contorno vira fio marinho. */
+  .claro .botao-claro {
+    background: var(--color-marinho);
+    color: var(--color-branco);
+    box-shadow: 0 2px 6px rgb(22 34 46 / 0.25);
+  }
+  .claro .botao-claro:hover { box-shadow: 0 6px 16px rgb(22 34 46 / 0.3); }
+  .claro .botao-contorno {
+    border-color: rgb(44 65 86 / 0.5);
+    color: var(--color-marinho);
+  }
+  .claro .botao-contorno:hover { background: rgb(44 65 86 / 0.06); }
+}
+
+@keyframes aba {
+  0% { opacity: 1; transform: perspective(12em) rotateX(0deg); }
+  100% { opacity: 1; transform: perspective(12em) rotateX(-90deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .placa.girando::before { animation: none; }
+  .botao { transition: none; }
+  .botao:active { transform: none; }
+}
+
+/* Botão "cartão de embarque": nos botões preenchidos com ícone, o ícone vai para um canhoto
+   separado por picote tracejado, com os dois recortes do cartão. Fica fora das camadas de
+   propósito, para que utilitários como px-4 não desmontem o canhoto. */
+.botao:is(.botao-claro, .botao-escuro, .botao-contorno):has(> svg:first-child) {
+  --canhoto: 3rem;
+  --recorte: 0.42rem;
+  position: relative;
+  padding-left: calc(var(--canhoto) + 1.1rem);
+  border-radius: 0.375rem;
+  box-shadow: none;
+  -webkit-mask:
+    radial-gradient(circle at var(--canhoto) 0, #0000 var(--recorte), #000 calc(var(--recorte) + 0.02rem)) top / 100% 51% no-repeat,
+    radial-gradient(circle at var(--canhoto) 100%, #0000 var(--recorte), #000 calc(var(--recorte) + 0.02rem)) bottom / 100% 51% no-repeat;
+          mask:
+    radial-gradient(circle at var(--canhoto) 0, #0000 var(--recorte), #000 calc(var(--recorte) + 0.02rem)) top / 100% 51% no-repeat,
+    radial-gradient(circle at var(--canhoto) 100%, #0000 var(--recorte), #000 calc(var(--recorte) + 0.02rem)) bottom / 100% 51% no-repeat;
+}
+.botao:is(.botao-claro, .botao-escuro, .botao-contorno).min-h-11:has(> svg:first-child) { --canhoto: 2.75rem; --recorte: 0.36rem; padding-left: calc(var(--canhoto) + 0.9rem); }
+.botao:is(.botao-claro, .botao-escuro, .botao-contorno):has(> svg:first-child) > svg:first-child {
+  position: absolute;
+  left: calc(var(--canhoto) / 2);
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+/* O picote: tracejado entre os dois recortes. */
+.botao:is(.botao-claro, .botao-escuro, .botao-contorno):has(> svg:first-child)::before {
+  content: "";
+  position: absolute;
+  left: calc(var(--canhoto) - 1px);
+  top: calc(var(--recorte) + 0.2rem);
+  bottom: calc(var(--recorte) + 0.2rem);
+  border-left: 2px dashed currentColor;
+  opacity: 0.35;
+}
+/* Hover "carimbo no canhoto": com a máscara a sombra seria cortada, então o cartão não sobe;
+   o canhoto inverte de cor e o ícone dá um passo para a direita. */
+.botao-claro:has(> svg:first-child):hover { transform: none; box-shadow: none; background: var(--color-branco); }
+.claro .botao-claro:has(> svg:first-child):hover,
+.botao-escuro:has(> svg:first-child):hover { transform: none; box-shadow: none; background: var(--color-marinho); }
+.botao:is(.botao-claro, .botao-escuro, .botao-contorno):has(> svg:first-child) {
+  --carimbo: var(--color-marinho);
+  --carimbo-tinta: var(--color-branco);
+}
+.claro .botao.botao-claro:has(> svg:first-child),
+.botao.botao-escuro:has(> svg:first-child),
+.botao.botao-contorno:has(> svg:first-child) {
+  --carimbo: var(--color-branco);
+  --carimbo-tinta: var(--color-marinho);
+}
+.claro .botao.botao-contorno:has(> svg:first-child) {
+  --carimbo: var(--color-marinho);
+  --carimbo-tinta: var(--color-branco);
+}
+.botao:is(.botao-claro, .botao-escuro, .botao-contorno):has(> svg:first-child)::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: var(--canhoto);
+  background: var(--carimbo);
+  border-radius: inherit;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  opacity: 0;
+  transition: opacity 200ms var(--ease-placa);
+  pointer-events: none;
+}
+/* No contorno, o carimbo cobre também o fio de 1px do canhoto. */
+.botao-contorno:has(> svg:first-child)::after { top: -1px; bottom: -1px; left: -1px; }
+.botao:is(.botao-claro, .botao-escuro, .botao-contorno):has(> svg:first-child) > svg:first-child,
+.botao:is(.botao-claro, .botao-escuro, .botao-contorno):has(> svg:first-child)::before {
+  z-index: 1;
+}
+.botao:is(.botao-claro, .botao-escuro, .botao-contorno):has(> svg:first-child) > svg:first-child {
+  transition: transform 200ms var(--ease-placa), color 200ms var(--ease-placa);
+}
+.botao:is(.botao-claro, .botao-escuro, .botao-contorno):has(> svg:first-child):is(:hover, :focus-visible)::after { opacity: 1; }
+.botao:is(.botao-claro, .botao-escuro, .botao-contorno):has(> svg:first-child):is(:hover, :focus-visible) > svg:first-child {
+  color: var(--carimbo-tinta);
+  transform: translate(calc(-50% + 2px), -50%);
+}
+@media (prefers-reduced-motion: reduce) {
+  .botao:is(.botao-claro, .botao-escuro, .botao-contorno):has(> svg:first-child) > svg:first-child,
+  .botao:is(.botao-claro, .botao-escuro, .botao-contorno):has(> svg:first-child)::after { transition: none; }
+  .botao:is(.botao-claro, .botao-escuro, .botao-contorno):has(> svg:first-child):is(:hover, :focus-visible) > svg:first-child { transform: translate(-50%, -50%); }
+}
+.botao:is(.botao-claro, .botao-escuro, .botao-contorno):has(> svg:first-child):active { box-shadow: none; }
+
+/* Header encolhido: o "Cotar" acompanha o logo e fica mais baixo, com canhoto menor. */
+.botao-topo { transition: min-height 300ms var(--ease-placa), padding 300ms var(--ease-placa), font-size 300ms var(--ease-placa); }
+[data-compacto] .botao.botao-topo:has(> svg:first-child) {
+  --canhoto: 2.25rem;
+  --recorte: 0.28rem;
+  min-height: 2.25rem;
+  padding: 0.3rem 0.9rem 0.3rem calc(var(--canhoto) + 0.75rem);
+  font-size: 0.9375rem;
+}
+[data-compacto] .botao-topo > svg:first-child { width: 16px; height: 16px; }
+@media (prefers-reduced-motion: reduce) { .botao-topo { transition: none; } }
+
+/* Cartão de embarque em contorno: o fio contorna os recortes (anel desenhado no fundo),
+   para o picote não parecer um furo no traço. */
+.botao-contorno { --borda: rgb(255 255 255 / 0.5); }
+.claro .botao-contorno { --borda: rgb(44 65 86 / 0.5); }
+.botao.botao-contorno:has(> svg:first-child) {
+  border-color: var(--borda);
+  background-image:
+    radial-gradient(circle at var(--canhoto) 0, #0000 var(--recorte), var(--borda) var(--recorte), var(--borda) calc(var(--recorte) + 1px), #0000 calc(var(--recorte) + 1.5px)),
+    radial-gradient(circle at var(--canhoto) 100%, #0000 var(--recorte), var(--borda) var(--recorte), var(--borda) calc(var(--recorte) + 1px), #0000 calc(var(--recorte) + 1.5px));
+  /* O canhoto é medido da borda de fora; o fio de 1px desloca o desenho. */
+  background-origin: border-box;
+}

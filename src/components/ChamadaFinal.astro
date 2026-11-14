@@ -1,0 +1,26 @@
+---
+import IconeWhatsApp from './IconeWhatsApp.astro';
+import { linkWhatsApp } from '../lib/whatsapp';
+
+interface Props {
+  titulo: string;
+  texto: string;
+  mensagem: string;
+  ref: string;
+  rotuloBotao?: string;
+}
+const { titulo, texto, mensagem, ref, rotuloBotao = 'Cotar no WhatsApp' } = Astro.props;
+---
+<section class="claro bg-branco text-marinho">
+  <div class="mx-auto grid max-w-[78rem] gap-8 px-4 py-20 sm:px-6 md:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] md:items-end md:py-24 lg:px-8">
+    <div>
+      <h2 class="text-[2.25rem] sm:text-[3rem]">{titulo}</h2>
+      <p class="mt-5 max-w-[52ch] text-lg text-marinho-suave">{texto}</p>
+    </div>
+    <div class="md:justify-self-end">
+      <a class="botao botao-escuro" href={linkWhatsApp(mensagem, ref)}>
+        <IconeWhatsApp size={20} /> {rotuloBotao}
+      </a>
+    </div>
+  </div>
+</section>

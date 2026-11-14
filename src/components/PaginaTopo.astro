@@ -1,0 +1,26 @@
+---
+import IconeWhatsApp from './IconeWhatsApp.astro';
+// Abertura das páginas internas: título, linha de apoio e a ação do WhatsApp.
+import { linkWhatsApp } from '../lib/whatsapp';
+
+interface Props {
+  titulo: string;
+  lede: string;
+  mensagem: string;
+  ref: string;
+  rotuloBotao?: string;
+}
+const { titulo, lede, mensagem, ref, rotuloBotao = 'Cotar no WhatsApp' } = Astro.props;
+---
+<section class="bg-marinho" aria-labelledby="pagina-titulo">
+  <div class="mx-auto grid max-w-[78rem] gap-6 px-4 pt-8 pb-14 sm:px-6 md:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] md:items-end md:gap-12 md:pt-14 md:pb-20 lg:px-8">
+    <h1 id="pagina-titulo" class="text-[2.25rem] sm:text-[3.25rem] lg:text-[4rem]">{titulo}</h1>
+    <div>
+      <p class="max-w-[44ch] text-lg text-tinta-suave">{lede}</p>
+      <a class="botao botao-claro mt-6" href={linkWhatsApp(mensagem, ref)}>
+        <IconeWhatsApp size={20} /> {rotuloBotao}
+      </a>
+    </div>
+  </div>
+  <slot />
+</section>

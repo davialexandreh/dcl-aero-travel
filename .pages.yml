@@ -1,0 +1,70 @@
+# Painel do cliente (Pages CMS). O cliente entra por convite de e-mail.
+media:
+  input: public/fotos
+  output: /fotos
+  extensions: [jpg, jpeg, png, webp]
+
+content:
+  - name: promocoes
+    label: Promoções
+    type: collection
+    path: src/content/promocoes
+    format: json
+    filename: "{fields.destino}-{fields.ida}.json"
+    view:
+      fields: [destino, saida, ida, precoPorPessoa]
+      sort: [ida]
+    fields:
+      - { name: destino, label: Destino, type: string, required: true, description: "Como aparece no painel. Ex.: SALVADOR" }
+      - { name: saida, label: Saída, type: string, required: true, description: "Cidade e aeroporto. Ex.: São Paulo (GRU)" }
+      - { name: ida, label: Data de ida, type: date, required: true, description: "A promoção sai do site sozinha 5 dias antes desta data." }
+      - { name: volta, label: Data de volta, type: date, required: true }
+      - { name: hotel, label: Hotel, type: string, description: "Descreva o hotel. Nunca coloque o nome do fornecedor." }
+      - { name: precoPorPessoa, label: Preço por pessoa (R$), type: number, required: true }
+      - { name: parcelas, label: Parcelas, type: number, description: "Número de parcelas no cartão. Ex.: 10" }
+      - { name: foto, label: Foto do destino, type: image, description: "Foto do destino, nunca o flyer." }
+      - { name: exemplo, label: Exemplo (não é promoção real), type: boolean, default: false }
+
+  - name: pacotes
+    label: Pacotes
+    type: collection
+    path: src/content/pacotes
+    format: json
+    filename: "{fields.destino}-{fields.ida}.json"
+    fields:
+      - { name: destino, label: Destino, type: string, required: true }
+      - { name: saida, label: Saída, type: string, required: true }
+      - { name: ida, label: Data de ida, type: date, required: true }
+      - { name: volta, label: Data de volta, type: date, required: true }
+      - { name: hotel, label: Hotel, type: string, description: "Nunca coloque o nome do fornecedor." }
+      - { name: precoPorPessoa, label: Preço por pessoa (R$), type: number, required: true }
+      - { name: parcelas, label: Parcelas, type: number }
+      - { name: inclui, label: O que inclui, type: string, list: true }
+      - { name: foto, label: Foto do destino, type: image, description: "Foto do destino, nunca o flyer." }
+      - { name: exemplo, label: Exemplo (não é pacote real), type: boolean, default: false }
+
+  - name: duvidas
+    label: Dúvidas frequentes
+    type: collection
+    path: src/content/duvidas
+    format: json
+    view:
+      fields: [pergunta, ordem]
+      sort: [ordem]
+    fields:
+      - { name: pergunta, label: Pergunta, type: string, required: true }
+      - { name: resposta, label: Resposta, type: text, required: true }
+      - { name: servicos, label: "Aparece nas páginas (passagens-com-milhas, pacotes, aluguel-de-carros, mentoria-em-milhas, empresas)", type: string, list: true }
+      - { name: ordem, label: Ordem, type: number, default: 0 }
+      - { name: revisar, label: Resposta ainda a confirmar, type: boolean, default: false }
+
+  - name: depoimentos
+    label: Depoimentos
+    type: collection
+    path: src/content/depoimentos
+    format: json
+    fields:
+      - { name: nome, label: Nome (só primeiro nome e inicial), type: string, required: true }
+      - { name: destino, label: Destino, type: string }
+      - { name: texto, label: Depoimento, type: text, required: true }
+      - { name: ordem, label: Ordem, type: number, default: 0 }

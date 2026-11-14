@@ -1,0 +1,53 @@
+---
+import { caminho } from '../lib/caminho';
+import { site } from '../config/site';
+---
+{site.gaId !== '' || import.meta.env.DEV ? (
+  <div
+    data-cookies
+    transition:persist="cookies"
+    hidden
+    role="region"
+    aria-label="Aviso de cookies"
+    class="claro fixed inset-x-3 bottom-3 z-40 mx-auto max-w-[40rem] rounded-md bg-branco p-4 text-marinho shadow-[0_12px_30px_rgb(0_0_0/0.35)] sm:p-5"
+  >
+    <p class="text-[0.9375rem]">
+      Usamos cookies só para contar visitas e cliques (Google Analytics). Nada é usado para anúncios.{' '}
+      <a href={caminho('/privacidade')} class="underline">Política de privacidade</a>.
+    </p>
+    <div class="mt-3 flex flex-wrap gap-2">
+      <button type="button" class="botao botao-escuro min-h-10 px-4 text-[0.9375rem]" data-aceitar>Aceitar</button>
+      <button type="button" class="botao min-h-10 border border-marinho-linha px-4 text-[0.9375rem] text-marinho" data-recusar>Recusar</button>
+    </div>
+  </div>
+) : null}
+
+<script define:vars={{ gaId: site.gaId }}>
+  // Consent Mode básico: nada do Google carrega antes do aceite.
+  // Roda uma vez só: o aviso persiste entre páginas e o GA4 conta as trocas pelo histórico do navegador.
+  const CHAVE = 'dcl-cookies';
+  const aviso = document.querySelector('[data-cookies]');
+  const carregarGA = () => {
+    if (!gaId) return;
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function () { window.dataLayer.push(arguments); };
+    window.gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'granted' });
+    window.gtag('js', new Date());
+    window.gtag('config', gaId);
+    const s = document.createElement('script');
+    s.async = true;
+    s.src = `https://www.googletagmanager.com/gtag/js?id=${gaId}`;
+    document.head.appendChild(s);
+  };
+  let escolha = null;
+  try { escolha = localStorage.getItem(CHAVE); } catch {}
+  if (escolha === 'aceito') carregarGA();
+  else if (escolha === null && aviso) aviso.hidden = false;
+  const salvar = (valor) => {
+    try { localStorage.setItem(CHAVE, valor); } catch {}
+    if (aviso) aviso.hidden = true;
+    if (valor === 'aceito') carregarGA();
+  };
+  aviso?.querySelector('[data-aceitar]')?.addEventListener('click', () => salvar('aceito'));
+  aviso?.querySelector('[data-recusar]')?.addEventListener('click', () => salvar('recusado'));
+</script>

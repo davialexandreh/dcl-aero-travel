@@ -1,0 +1,345 @@
+---
+import IconeWhatsApp from './IconeWhatsApp.astro';
+import { ChevronDown, ChevronLeft, ChevronRight } from '@lucide/astro';
+import Placas from './Placas.astro';
+import { linkWhatsApp } from '../lib/whatsapp';
+import { diaCurto, diaLimite, estaNoAr, hojeSP, reais, statusPartida } from '../lib/datas';
+import { site } from '../config/site';
+
+interface Partida {
+  id: string;
+  data: {
+    destino: string;
+    saida: string;
+    ida: string;
+    volta: string;
+    hotel?: string;
+    precoPorPessoa: number;
+    parcelas?: number;
+    exemplo: boolean;
+  };
+}
+interface Props {
+  partidas: Partida[];
+  porPagina?: number;
+  titulo?: string;
+  vazio?: string;
+  vazioPlacas?: string;
+}
+const {
+  partidas,
+  porPagina = 8,
+  titulo = 'Partidas',
+  vazioPlacas = 'Nenhuma partida',
+  vazio = 'Nenhuma promoção programada agora. Conte para a DCL para onde você quer ir e nossa equipe busca a melhor condição.',
+} = Astro.props;
+const idTitulo = `${titulo.toLowerCase().replace(/[^a-z]+/g, '-')}-titulo`;
+const hoje = hojeSP();
+const noAr = partidas
+  .filter((p) => estaNoAr(p.data.ida, hoje))
+  .sort((a, b) => a.data.ida.localeCompare(b.data.ida));
+const maiorDestino = Math.max(12, ...noAr.map((p) => p.data.destino.length));
+// "São Paulo (GRU)" vira "GRU" na linha curta do celular.
+const codigoSaida = (saida: string) => saida.match(/\(([^)]+)\)/)?.[1] ?? saida;
+const paginas = Math.max(1, Math.ceil(noAr.length / porPagina));
+---
+<section
+  class="claro relative rounded-md bg-branco text-marinho shadow-[0_18px_40px_rgb(0_0_0/0.35)]"
+  aria-labelledby={idTitulo}
+  data-painel
+  data-por-pagina={porPagina}
+>
+  <header class="flex items-end justify-between gap-4 border-b border-linha px-4 pt-4 pb-3 sm:px-6">
+    <h2 id={idTitulo} class="font-painel text-[1.75rem] font-semibold tracking-[0.08em] uppercase sm:text-[2rem]">
+      {titulo}
+    </h2>
+    <p class="rotulo-painel pb-1 text-tinta-suave tabular-nums" data-relogio aria-live="off">
+      Hoje · {diaCurto(hoje)}
+    </p>
+  </header>
+
+  {noAr.length === 0 ? (
+    <div class="px-4 py-10 sm:px-6">
+      <Placas texto={vazioPlacas} class="text-lg sm:text-2xl" />
+      <p class="mt-5 max-w-[48ch] text-tinta-suave">
+        {vazio}
+      </p>
+      <a class="botao botao-claro mt-6" href={linkWhatsApp('Olá! Vim pelo site da DCL e quero uma cotação.', 'painel-vazio')}>
+        <IconeWhatsApp size={20} /> Cotar no WhatsApp
+      </a>
+    </div>
+  ) : (
+    <>
+      <div
+        class="hidden grid-cols-[minmax(0,2.1fr)_minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,0.9fr)_minmax(0,0.9fr)_2rem] gap-4 px-6 pt-3 pb-2 text-tinta-fraca md:grid"
+        aria-hidden="true"
+      >
+        <span class="rotulo-painel">Destino</span>
+        <span class="rotulo-painel">Saída</span>
+        <span class="rotulo-painel">Ida · Volta</span>
+        <span class="rotulo-painel text-right">Por pessoa</span>
+        <span class="rotulo-painel">Status</span>
+        <span></span>
+      </div>
+      <ul class="divide-y divide-linha" role="list">
+        {noAr.map((p, i) => {
+          const d = p.data;
+          const status = statusPartida(d.ida, hoje);
+          const periodo = `${diaCurto(d.ida)} – ${diaCurto(d.volta)}`;
+          const mensagem = `Olá! Tenho interesse na promoção ${d.destino}, saída de ${d.saida}, ${periodo}.`;
+          return (
+            <li data-partida data-limite={diaLimite(d.ida)} data-pagina={Math.floor(i / porPagina)}>
+              <details class="group">
+                <summary class="linha-partida grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-3 gap-y-2 px-4 py-3 transition-colors sm:px-6 md:grid-cols-[minmax(0,2.1fr)_minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,0.9fr)_minmax(0,0.9fr)_2rem] md:gap-x-4 md:py-4">
+                  <Placas texto={d.destino} minimo={maiorDestino} class="placas-justas order-1 max-w-full overflow-hidden text-[0.875rem] sm:text-[1.1rem] md:text-[1.2rem] lg:text-[1.35rem]" />
+                  <span class="order-2 text-right font-painel text-[1.25rem] leading-none font-bold tabular-nums md:order-4 md:text-[1.375rem]">
+                    {reais(d.precoPorPessoa)}
+                  </span>
+                  <span class="order-3 font-painel text-[0.9375rem] font-medium whitespace-nowrap text-tinta-suave tabular-nums md:hidden">
+                    {codigoSaida(d.saida)} · {periodo}
+                  </span>
+                  <span class="hidden font-painel text-[1.0625rem] font-medium md:order-2 md:block">{d.saida}</span>
+                  <span class="hidden font-painel text-[1.0625rem] font-medium tabular-nums md:order-3 md:block">{periodo}</span>
+                  <span class="order-4 col-span-2 flex flex-wrap items-center justify-end gap-x-2 gap-y-1 md:order-5 md:col-span-1 md:flex-col md:items-start md:justify-center">
+                    <span
+                      class:list={[
+                        'rotulo-painel rounded-sm px-2 py-1 whitespace-nowrap',
+                        status === 'ULTIMOS_DIAS' ? 'bg-marinho text-branco' : 'text-tinta-suave',
+                      ]}
+                      data-status
+                    >
+                      {status === 'ULTIMOS_DIAS' ? 'Últimos dias' : 'Programado'}
+                    </span>
+                    {d.exemplo && <span class="rotulo-painel text-[0.6875rem] text-tinta-fraca md:px-2">Exemplo</span>}
+                  </span>
+                  <!-- Botão de abrir a linha: visível em todo tamanho, para ficar claro que a partida tem detalhes. -->
+                  <span class="seta-detalhes col-start-3 row-start-1 justify-self-end md:order-6 md:col-start-auto md:row-start-auto" aria-hidden="true"><ChevronDown size={18} /></span>
+                </summary>
+                <div class="grid gap-5 px-4 pt-1 pb-6 sm:px-6 md:grid-cols-[minmax(0,2.1fr)_minmax(0,3.1fr)_auto] md:items-end">
+                  <dl class="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-[0.9375rem]">
+                    {d.hotel && (<><dt class="text-tinta-fraca">Hotel</dt><dd>{d.hotel}</dd></>)}
+                    <dt class="text-tinta-fraca">Período</dt><dd class="tabular-nums">{periodo}</dd>
+                    {d.parcelas && d.parcelas > 1 && (
+                      <><dt class="text-tinta-fraca">Parcelas</dt><dd class="tabular-nums">ou {d.parcelas}x de {reais(Math.ceil(d.precoPorPessoa / d.parcelas))}</dd></>
+                    )}
+                  </dl>
+                  <p class="text-[0.875rem] text-tinta-fraca">
+                    Valores por pessoa, sujeitos a disponibilidade e alteração.
+                    {d.exemplo && <strong class="font-semibold text-tinta-suave"> Promoção de exemplo, só para demonstração.</strong>}
+                  </p>
+                  <a class="botao botao-claro" href={linkWhatsApp(mensagem, `promo-${p.id}`)}>
+                    <IconeWhatsApp size={20} /> Quero essa
+                  </a>
+                </div>
+              </details>
+            </li>
+          );
+        })}
+      </ul>
+      <footer>
+        <!-- Paginação de painel: um trilho por página; o da página atual enche enquanto o painel gira sozinho. -->
+        <nav class="flex items-center justify-between gap-4 border-t border-linha px-4 py-3 sm:justify-end sm:px-6 [&[hidden]]:hidden" data-paginacao aria-label="Páginas de partidas" hidden={paginas < 2}>
+            <div class="flex items-center gap-3">
+              <ol class="flex items-center gap-1.5" data-segmentos aria-hidden="true"></ol>
+              <span class="rotulo-painel text-tinta-suave tabular-nums" data-pagina-atual>Página 1 de {paginas}</span>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button type="button" class="pag-seta" data-anterior aria-label="Página anterior de partidas"><ChevronLeft size={20} aria-hidden="true" /></button>
+              <button type="button" class="pag-seta" data-proxima aria-label="Próxima página de partidas"><ChevronRight size={20} aria-hidden="true" /></button>
+            </div>
+        </nav>
+        <!-- Quem não acha o destino no painel também termina numa conversa. -->
+        <div class="flex flex-col gap-3 rounded-b-md border-t border-linha bg-marinho/[0.04] px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+          <p class="font-painel text-[1.1875rem] font-semibold">Não achou o seu destino?</p>
+          <a class="botao botao-claro w-full sm:w-auto" href={linkWhatsApp('Olá! Vim pelo site da DCL e não achei o destino que procuro no painel. Quero uma cotação.', `painel-${titulo.toLowerCase()}`)}>
+            <IconeWhatsApp size={20} /> Cotar no WhatsApp
+          </a>
+        </div>
+      </footer>
+    </>
+  )}
+</section>
+
+<script>
+  import { hojeSP } from '../lib/datas';
+  import { girar, semMovimento } from '../lib/placas';
+
+  // Com a troca de página sem recarregar, o painel é montado a cada página e desmontado ao sair.
+  let limpar: Array<() => void> = [];
+  document.addEventListener('astro:before-swap', () => {
+    limpar.forEach((f) => f());
+    limpar = [];
+  });
+
+  document.addEventListener('astro:page-load', () => document.querySelectorAll<HTMLElement>('[data-painel]').forEach((painel) => {
+    const hoje = hojeSP();
+    // Garantia entre publicações: some o que já passou do limite.
+    painel.querySelectorAll<HTMLElement>('[data-partida]').forEach((li) => {
+      if ((li.dataset.limite ?? '') < hoje) li.remove();
+    });
+
+    const linhas = [...painel.querySelectorAll<HTMLElement>('[data-partida]')];
+    // No celular cada linha ocupa três linhas de texto: menos partidas por página.
+    const porPagina = window.matchMedia('(min-width: 768px)').matches ? Number(painel.dataset.porPagina ?? 8) : 5;
+    const total = Math.max(1, Math.ceil(linhas.length / porPagina));
+    let atual = 0;
+    let parado = false;
+    let vez = 0;
+    let trocandoPagina = false;
+
+    const segmentos = painel.querySelector<HTMLElement>('[data-segmentos]');
+    const mostrar = (pagina: number, animar = true) => {
+      atual = pagina;
+      vez = 0;
+      linhas.forEach((li, i) => {
+        li.hidden = Math.floor(i / porPagina) !== pagina;
+      });
+      const rotulo = painel.querySelector('[data-pagina-atual]');
+      if (rotulo) rotulo.textContent = `Página ${pagina + 1} de ${total}`;
+      // Trilhos recriados a cada troca: o da página atual recomeça a encher do zero.
+      segmentos?.replaceChildren(...Array.from({ length: total }, (_, i) => {
+        const item = document.createElement('li');
+        item.className = 'pag-segmento';
+        if (i === pagina) item.dataset.ativo = '';
+        return item;
+      }));
+      const controles = painel.querySelector<HTMLElement>('[data-paginacao]');
+      if (controles) controles.hidden = total < 2;
+      if (animar) {
+        // Enquanto a página inteira gira, a onda de uma linha por vez espera.
+        trocandoPagina = true;
+        setTimeout(() => { trocandoPagina = false; }, 1600);
+        linhas.filter((li) => !li.hidden).forEach((li) => girar(li));
+      }
+    };
+
+    mostrar(0, false);
+    const lista = painel.querySelector<HTMLElement>('ul');
+    girar(lista ?? painel);
+    // A página 1 define a altura do painel: trocar de página não empurra o resto do site.
+    if (lista && total > 1) {
+      document.fonts.ready.then(() => { lista.style.minHeight = `${lista.offsetHeight}px`; });
+    }
+
+    // Como num painel de verdade, as páginas giram sozinhas até alguém interagir.
+    // O tempo de cada página é o trilho enchendo (9s); quando ele termina, o painel vira.
+    const parar = () => {
+      parado = true;
+      painel.classList.remove('painel-girando');
+    };
+    painel.classList.toggle('painel-girando', total > 1 && !semMovimento);
+    segmentos?.addEventListener('animationend', () => {
+      if (!parado) mostrar((atual + 1) % total);
+    });
+    painel.querySelector('[data-proxima]')?.addEventListener('click', () => {
+      parar();
+      mostrar((atual + 1) % total);
+    });
+    painel.querySelector('[data-anterior]')?.addEventListener('click', () => {
+      parar();
+      mostrar((atual - 1 + total) % total);
+    });
+    painel.addEventListener('pointerenter', parar, { once: true });
+    painel.addEventListener('touchstart', parar, { once: true, passive: true });
+    painel.addEventListener('focusin', parar, { once: true });
+    painel.addEventListener('toggle', parar, { capture: true, once: true });
+    let visivel = false;
+    const observador = new IntersectionObserver(([e]) => {
+      visivel = e.isIntersecting;
+      // Fora da tela o trilho para de encher, então o painel não vira sem ninguém ver.
+      painel.classList.toggle('painel-pausado', !visivel);
+    }, { threshold: 0.4, rootMargin: '-64px 0px 0px 0px' });
+    observador.observe(painel);
+    limpar.push(() => observador.disconnect());
+
+    // Como um painel de aeroporto atualizando: uma linha gira por vez, a cada 2,5s, e as outras ficam legíveis.
+    if (!semMovimento) {
+      const onda = setInterval(() => {
+        if (parado || !visivel || trocandoPagina) return;
+        const visiveis = linhas.filter((li) => !li.hidden);
+        if (visiveis.length === 0) return;
+        girar(visiveis[vez % visiveis.length]);
+        vez++;
+      }, 2500);
+      limpar.push(() => clearInterval(onda));
+    }
+
+    const relogio = painel.querySelector('[data-relogio]');
+    const atualizar = () => {
+      if (!relogio) return;
+      const agora = new Date();
+      const dia = new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', day: '2-digit', month: 'short' })
+        .format(agora).replace('.', '').replace(' de ', ' ').toUpperCase();
+      const hora = new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit' }).format(agora);
+      relogio.textContent = `Hoje · ${dia} · ${hora}`;
+    };
+    atualizar();
+    const tempo = setInterval(atualizar, 30_000);
+    limpar.push(() => clearInterval(tempo));
+  }));
+</script>
+
+<style is:global>
+  /* Trilhos da paginação: um por página. O da página atual enche em 9s enquanto o painel gira sozinho;
+     parado (alguém interagiu), ele fica cheio. */
+  .pag-segmento {
+    position: relative;
+    width: 1.75rem;
+    height: 0.25rem;
+    border-radius: 0.125rem;
+    background: rgb(44 65 86 / 0.16);
+    overflow: hidden;
+  }
+  .pag-segmento[data-ativo]::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--color-marinho);
+    transform-origin: left;
+  }
+  .painel-girando .pag-segmento[data-ativo]::after { animation: pag-tempo 9s linear forwards; }
+  .painel-pausado .pag-segmento[data-ativo]::after { animation-play-state: paused; }
+  @keyframes pag-tempo {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+  /* Linha da partida: o quadradinho com a seta diz que ela abre; no hover e aberta, ele vira marinho. */
+  .seta-detalhes {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 0.375rem;
+    border: 1px solid rgb(44 65 86 / 0.28);
+    color: var(--color-marinho);
+    transition: background-color 200ms, color 200ms, border-color 200ms;
+  }
+  .seta-detalhes svg { transition: transform 300ms var(--ease-placa); }
+  @media (hover: hover) {
+    .linha-partida:hover { background: rgb(44 65 86 / 0.04); }
+    .linha-partida:hover .seta-detalhes { background: var(--color-marinho); border-color: var(--color-marinho); color: var(--color-branco); }
+  }
+  details[open] > .linha-partida .seta-detalhes { background: var(--color-marinho); border-color: var(--color-marinho); color: var(--color-branco); }
+  details[open] > .linha-partida .seta-detalhes svg { transform: rotate(180deg); }
+  /* Aberta, a partida ganha um fundo leve para os detalhes lerem como parte dela. */
+  [data-partida] details[open] { background: rgb(44 65 86 / 0.04); }
+  @media (prefers-reduced-motion: reduce) {
+    .seta-detalhes, .seta-detalhes svg { transition: none; }
+  }
+  .pag-seta {
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 0.375rem;
+    border: 1px solid rgb(44 65 86 / 0.3);
+    color: var(--color-marinho);
+    transition: background-color 200ms, transform 200ms var(--ease-placa);
+  }
+  .pag-seta:hover { background: rgb(44 65 86 / 0.06); }
+  .pag-seta:active { transform: scale(0.94); background: rgb(44 65 86 / 0.12); }
+  @media (prefers-reduced-motion: reduce) {
+    .pag-seta { transition: none; }
+    .pag-seta:active { transform: none; }
+  }
+</style>

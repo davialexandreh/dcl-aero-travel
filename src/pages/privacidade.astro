@@ -1,0 +1,42 @@
+---
+// RASCUNHO: descreve o que o site faz hoje. Precisa de revisão jurídica antes de publicar.
+import Documento from '../layouts/Documento.astro';
+import { site } from '../config/site';
+---
+<Documento
+  titulo="Política de privacidade | DCL Aero Travel"
+  descricao="Como o site da DCL Aero Travel trata dados pessoais e cookies."
+  h1="Política de privacidade"
+  atualizado="novembro de 2026"
+>
+  <p>
+    Esta política explica quais dados o site da {site.nome} ({site.url.replace('https://', '')}) trata, para quê e quais são os seus direitos, conforme a Lei Geral de Proteção de Dados (Lei 13.709/2018).
+  </p>
+
+  <h2>Quem é o responsável</h2>
+  <p>
+    {site.nome}, CNPJ {site.cnpj}. Para qualquer assunto sobre os seus dados, escreva para <a href={`mailto:${site.email}`}>{site.email}</a>.
+  </p>
+
+  <h2>O que o site guarda</h2>
+  <ul>
+    <li><strong>Nenhum formulário guarda dados.</strong> O formulário de cotação só monta a mensagem e abre o WhatsApp. Nada é enviado para um servidor da DCL.</li>
+    <li><strong>Preferência de cookies.</strong> O site lembra, no seu próprio navegador, se você aceitou ou recusou os cookies.</li>
+    <li><strong>Origem da visita.</strong> Se você chegou por um link do Instagram ou do grupo, o navegador guarda essa origem durante a visita para identificar a mensagem do WhatsApp. Ela some quando você fecha a aba.</li>
+  </ul>
+
+  <h2>Cookies e medição</h2>
+  <p>
+    Com a sua autorização, o site usa o Google Analytics para contar visitas e cliques nos botões do WhatsApp, e para saber de que cidade e estado vêm as visitas. Não usamos cookies de anúncio. Se você recusar, nenhum cookie do Google é carregado.
+  </p>
+
+  <h2>Conversas no WhatsApp</h2>
+  <p>
+    Quando você chama a DCL no WhatsApp, os dados que você envia (nome, datas, destino, documentos para emissão) são usados para cotar e emitir a sua viagem e ficam registrados no sistema de atendimento da DCL. Eles não são vendidos nem usados para outra finalidade.
+  </p>
+
+  <h2>Seus direitos</h2>
+  <p>
+    Você pode pedir para confirmar se tratamos os seus dados, acessar, corrigir ou excluir esses dados, e revogar a autorização de cookies a qualquer momento, limpando os dados do site no seu navegador. Os pedidos são feitos pelo e-mail <a href={`mailto:${site.email}`}>{site.email}</a>.
+  </p>
+</Documento>

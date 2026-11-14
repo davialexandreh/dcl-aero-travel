@@ -1,0 +1,90 @@
+---
+import { Plane } from '@lucide/astro';
+// Barra de progresso da troca de página: um avião cruza o topo da tela.
+// Só aparece se a troca demorar mais que ~150ms; não segura o carregamento.
+---
+<div id="voo" class="voo" aria-hidden="true" transition:persist>
+  <div class="voo-rastro"></div>
+  <div class="voo-aviao"><Plane size={18} strokeWidth={2} /></div>
+</div>
+
+<style>
+  .voo {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 60;
+    height: 1.5rem;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 200ms ease;
+  }
+  .voo.voando,
+  .voo.pousando { opacity: 1; }
+  .voo.pousando { transition-delay: 250ms; opacity: 0; }
+
+  .voo-rastro {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 2px;
+    width: 100%;
+    background: var(--color-branco);
+    transform-origin: left;
+    transform: scaleX(0);
+  }
+  .voo-aviao {
+    position: absolute;
+    top: 0.25rem;
+    left: 0;
+    color: var(--color-branco);
+    transform: translateX(-2rem) rotate(45deg);
+  }
+
+  /* Decola rápido e desacelera, como quem espera a resposta; ao chegar, termina o trajeto. */
+  .voo.voando .voo-rastro { animation: rastro 8s cubic-bezier(0.1, 0.7, 0.2, 1) forwards; }
+  .voo.voando .voo-aviao { animation: aviao 8s cubic-bezier(0.1, 0.7, 0.2, 1) forwards; }
+  .voo.pousando .voo-rastro { transform: scaleX(1); transition: transform 250ms ease-out; }
+  .voo.pousando .voo-aviao { transform: translateX(calc(100vw + 2rem)) rotate(45deg); transition: transform 250ms ease-in; }
+
+  @keyframes rastro {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(0.9); }
+  }
+  @keyframes aviao {
+    from { transform: translateX(-2rem) rotate(45deg); }
+    to { transform: translateX(calc(90vw - 1.125rem)) rotate(45deg); }
+  }
+
+  /* Sem movimento: só a linha aparece, sem o avião cruzando a tela. */
+  @media (prefers-reduced-motion: reduce) {
+    .voo-aviao { display: none; }
+    .voo.voando .voo-rastro { animation: none; transform: scaleX(1); opacity: 0.6; }
+    .voo.pousando .voo-rastro { transition: none; }
+  }
+</style>
+
+<script>
+  const voo = document.getElementById('voo');
+  let espera: ReturnType<typeof setTimeout> | undefined;
+
+  document.addEventListener('astro:before-preparation', () => {
+    if (!voo) return;
+    clearTimeout(espera);
+    voo.classList.remove('pousando');
+    espera = setTimeout(() => voo.classList.add('voando'), 150);
+  });
+
+  document.addEventListener('astro:after-swap', () => {
+    clearTimeout(espera);
+    if (!voo || !voo.classList.contains('voando')) return;
+    // Congela o avião onde está e completa o trajeto até sair pela direita.
+    voo.querySelectorAll<HTMLElement>('.voo-rastro, .voo-aviao').forEach((el) => {
+      el.style.transform = getComputedStyle(el).transform;
+    });
+    voo.classList.remove('voando');
+    void voo.offsetWidth;
+    voo.querySelectorAll<HTMLElement>('.voo-rastro, .voo-aviao').forEach((el) => el.style.removeProperty('transform'));
+    voo.classList.add('pousando');
+    setTimeout(() => voo.classList.remove('pousando'), 700);
+  });
+</script>

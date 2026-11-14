@@ -1,0 +1,144 @@
+---
+import { caminho } from '../lib/caminho';
+import IconeWhatsApp from './IconeWhatsApp.astro';
+import IconeInstagram from './IconeInstagram.astro';
+import { Menu, X, ChevronRight } from '@lucide/astro';
+import Placas from './Placas.astro';
+import { linkWhatsApp } from '../lib/whatsapp';
+import { site } from '../config/site';
+
+// O rótulo é a placa; o local é como o painel do aeroporto chamaria aquela área do site.
+const itens = [
+  { href: caminho('/#partidas'), rotulo: 'Promoções', local: 'Partidas' },
+  { href: caminho('/#servicos'), rotulo: 'Serviços', local: 'Portões A1–A4' },
+  { href: caminho('/empresas'), rotulo: 'Empresas', local: 'Corporativo' },
+  { href: caminho('/duvidas'), rotulo: 'Dúvidas', local: 'Balcão' },
+  { href: caminho('/quem-somos'), rotulo: 'Quem somos', local: 'Ficha' },
+];
+const cotar = linkWhatsApp('Olá! Vim pelo site da DCL e quero uma cotação.', 'topo');
+const cotarMenu = linkWhatsApp('Olá! Vim pelo site da DCL e quero uma cotação.', 'menu');
+---
+<!-- Reserva a altura do header aberto: quando ele encolhe ao rolar, o conteúdo não pula. -->
+<div class="h-20 bg-marinho sm:h-[5.5rem]" aria-hidden="true"></div>
+<header data-topo class="group fixed inset-x-0 top-0 z-30 bg-marinho transition-shadow duration-300 data-compacto:shadow-[0_6px_18px_rgb(0_0_0/0.22)]">
+  <div class="mx-auto flex max-w-[78rem] items-center justify-between gap-4 px-4 py-3 transition-[padding] duration-300 group-data-compacto:py-1.5 sm:px-6 lg:px-8">
+    <a href={caminho('/')} class="shrink-0" aria-label="DCL Aero Travel, página inicial">
+      <img src={caminho('/marca/dcl-logo-branco.webp')} alt="" width="760" height="640" class="h-14 w-auto transition-[height] duration-300 group-data-compacto:h-9 sm:h-16 sm:group-data-compacto:h-10" />
+    </a>
+    <nav aria-label="Principal" class="hidden lg:block">
+      <ul class="flex items-center gap-7" role="list">
+        {itens.map((i) => (
+          <li><a href={i.href} class="font-painel text-[1.0625rem] font-medium tracking-[0.06em] uppercase text-tinta-suave no-underline transition-colors hover:text-branco">{i.rotulo}</a></li>
+        ))}
+      </ul>
+    </nav>
+    <div class="flex items-center gap-2">
+      <!-- No celular o "Cotar" fica dentro do menu, para o header ter só logo e menu. -->
+      <a href={cotar} class="botao botao-claro botao-topo hidden min-h-11 px-5 text-[1.0625rem] sm:inline-flex">
+        <IconeWhatsApp size={18} /> Cotar no WhatsApp
+      </a>
+      <details data-menu class="group/menu lg:hidden">
+        <summary class="grid size-11 cursor-pointer place-items-center rounded text-branco transition-colors hover:bg-white/[0.08]">
+          <Menu size={26} class="group-open/menu:hidden" aria-hidden="true" />
+          <X size={26} class="hidden group-open/menu:block" aria-hidden="true" />
+          <span class="sr-only"><span class="group-open/menu:hidden">Abrir menu</span><span class="hidden group-open/menu:inline">Fechar menu</span></span>
+        </summary>
+        <div data-menu-fundo class="menu-fundo absolute inset-x-0 top-full h-dvh bg-black/55" aria-hidden="true"></div>
+        <nav aria-label="Menu" class="menu-painel absolute inset-x-0 top-full max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain bg-marinho shadow-[0_18px_40px_rgb(0_0_0/0.35)]">
+          <div class="mx-auto max-w-[78rem] px-4 sm:px-6">
+            <ul role="list">
+              {itens.map((i) => (
+                <li class="border-b border-linha">
+                  <a href={i.href} class="-mx-4 flex min-h-16 items-center gap-4 px-4 no-underline transition-colors hover:bg-white/[0.04] sm:-mx-6 sm:px-6">
+                    <Placas texto={i.rotulo} class="text-[1.125rem]" />
+                    <span class="rotulo-painel ml-auto text-right text-tinta-suave" aria-hidden="true">{i.local}</span>
+                    <ChevronRight size={18} class="shrink-0 text-tinta-fraca" aria-hidden="true" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <div class="grid gap-3 py-5 sm:grid-cols-2">
+              <a href={cotarMenu} class="botao botao-claro w-full">
+                <IconeWhatsApp size={20} /> Cotar no WhatsApp
+              </a>
+              <a href={site.instagram} rel="noopener" class="botao botao-contorno w-full"><IconeInstagram size={20} /> Instagram da DCL</a>
+            </div>
+          </div>
+        </nav>
+      </details>
+    </div>
+  </div>
+</header>
+
+<style>
+  summary { list-style: none; }
+  summary::-webkit-details-marker { display: none; }
+
+  /* O painel desce da borda do header e as placas giram uma vez, como um painel atualizando. */
+  details[open] .menu-painel { animation: menu-desce 320ms var(--ease-placa) both; }
+  details[open] .menu-fundo { animation: menu-fundo 240ms ease-out both; }
+  @keyframes menu-desce {
+    from { clip-path: inset(0 0 100% 0); }
+    to { clip-path: inset(0 0 0 0); }
+  }
+  @keyframes menu-fundo {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    details[open] .menu-painel,
+    details[open] .menu-fundo { animation: none; }
+  }
+  :global(html.menu-aberto) { overflow: hidden; }
+  /* Sobre o marinho do menu, as placas escurecem para não sumirem no fundo. */
+  .menu-painel {
+    --color-placa-topo: color-mix(in srgb, var(--color-profundo) 55%, var(--color-marinho));
+    --color-placa: color-mix(in srgb, var(--color-profundo) 75%, var(--color-marinho));
+  }
+</style>
+
+<script>
+  import { girar } from '../lib/placas';
+
+  // Header fixo: encolhe depois de rolar um pouco. Com a troca de página sem recarregar, vale para o header novo.
+  let pendente = false;
+  const ajustar = () => {
+    pendente = false;
+    document.querySelector<HTMLElement>('[data-topo]')?.toggleAttribute('data-compacto', window.scrollY > 24);
+  };
+  window.addEventListener('scroll', () => {
+    if (pendente) return;
+    pendente = true;
+    requestAnimationFrame(ajustar);
+  }, { passive: true });
+
+  // Menu do celular: fecha ao escolher um item (inclusive âncoras da própria página), ao tocar fora e com Esc.
+  const fechar = (menu: HTMLDetailsElement, devolverFoco = false) => {
+    if (!menu.open) return;
+    menu.open = false;
+    if (devolverFoco) menu.querySelector('summary')?.focus();
+  };
+
+  document.addEventListener('astro:page-load', () => {
+    ajustar();
+    document.documentElement.classList.remove('menu-aberto');
+    const menu = document.querySelector<HTMLDetailsElement>('[data-menu]');
+    if (!menu) return;
+    const painel = menu.querySelector<HTMLElement>('.menu-painel');
+    menu.addEventListener('toggle', () => {
+      document.documentElement.classList.toggle('menu-aberto', menu.open);
+      if (menu.open && painel) girar(painel);
+    });
+    menu.querySelector('[data-menu-fundo]')?.addEventListener('click', () => fechar(menu));
+    painel?.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => fechar(menu)));
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    const menu = document.querySelector<HTMLDetailsElement>('[data-menu]');
+    if (menu) fechar(menu, true);
+  });
+  document.addEventListener('astro:before-preparation', () => {
+    document.documentElement.classList.remove('menu-aberto');
+  });
+</script>

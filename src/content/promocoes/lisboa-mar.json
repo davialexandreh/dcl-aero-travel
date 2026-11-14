@@ -1,0 +1,10 @@
+{
+  "destino": "LISBOA",
+  "saida": "São Paulo (GRU)",
+  "ida": "2027-03-20",
+  "volta": "2027-03-29",
+  "hotel": "Hotel na Baixa",
+  "precoPorPessoa": 6490,
+  "parcelas": 12,
+  "exemplo": true
+}
