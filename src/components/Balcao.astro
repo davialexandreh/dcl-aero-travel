@@ -22,7 +22,7 @@ const { duvidas, titulo = 'Balcão de informações', ref } = Astro.props;
   <ul class="divide-y divide-linha" role="list">
     {duvidas.map((d) => (
       <li>
-        <details class="group">
+        <details class="group" data-sanfona>
           <summary class="flex items-center justify-between gap-4 px-4 py-5 transition-colors hover:bg-white/[0.04] sm:px-6">
             <h3 class="font-painel text-[1.1875rem] font-semibold tracking-[0.02em] sm:text-[1.3125rem]">{d.data.pergunta}</h3>
             <ChevronDown size={20} class="shrink-0 text-tinta-suave transition-transform duration-300 group-open:rotate-180" aria-hidden="true" />

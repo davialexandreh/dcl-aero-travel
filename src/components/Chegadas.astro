@@ -16,7 +16,7 @@ const largura = Math.max(8, ...lista.map((d) => d.data.destino?.length ?? 0));
 ---
 <section class="bg-marinho" aria-labelledby="chegadas-titulo">
   <div class:list={['mx-auto max-w-[78rem] px-4 pb-20 sm:px-6 md:pb-28 lg:px-8', !continua && 'pt-20 md:pt-28']}>
-    <div class="rounded-md bg-profundo shadow-[0_18px_40px_rgb(0_0_0/0.35)]">
+    <div data-acende class="rounded-md bg-profundo shadow-[0_18px_40px_rgb(0_0_0/0.35)]">
       <header class="flex flex-wrap items-end justify-between gap-4 border-b border-linha px-4 pt-4 pb-3 sm:px-6">
         <h2 id="chegadas-titulo" class="font-painel text-[1.75rem] font-semibold tracking-[0.08em] uppercase sm:text-[2rem]">Chegadas</h2>
         <p class="pb-1 text-[0.9375rem] text-tinta-suave">Quem já voltou conta como foi.</p>
@@ -48,6 +48,9 @@ const largura = Math.max(8, ...lista.map((d) => d.data.destino?.length ?? 0));
 </section>
 
 <script>
+  import { deslizar } from '../lib/sanfona';
+  import { semMovimento } from '../lib/placas';
+
   // Só vira expansível o depoimento que de fato passa de 3 linhas.
   const preparar = () => {
     document.querySelectorAll<HTMLElement>('[data-depoimento]').forEach((bloco) => {
@@ -69,11 +72,28 @@ const largura = Math.max(8, ...lista.map((d) => d.data.destino?.length ?? 0));
     });
   };
   const alternar = (bloco: HTMLElement) => {
-    if (!bloco.hasAttribute('data-expansivel')) return;
+    if (!bloco.hasAttribute('data-expansivel') || bloco.dataset.deslizando) return;
     const abrir = bloco.dataset.aberto === undefined;
-    bloco.toggleAttribute('data-aberto', abrir);
-    bloco.setAttribute('aria-expanded', String(abrir));
-    bloco.setAttribute('aria-label', abrir ? 'Recolher o depoimento' : 'Ler o depoimento inteiro');
+    const aplicar = () => {
+      bloco.toggleAttribute('data-aberto', abrir);
+      bloco.setAttribute('aria-expanded', String(abrir));
+      bloco.setAttribute('aria-label', abrir ? 'Recolher o depoimento' : 'Ler o depoimento inteiro');
+    };
+    const texto = bloco.querySelector<HTMLElement>('p');
+    if (semMovimento || !texto) return aplicar();
+    // O texto desliza até a nova altura; ao recolher, as reticências só voltam no fim.
+    bloco.dataset.deslizando = '1';
+    const terminar = () => delete bloco.dataset.deslizando;
+    const antes = texto.offsetHeight;
+    if (abrir) {
+      aplicar();
+      deslizar(texto, antes, texto.offsetHeight, 300, terminar, false);
+    } else {
+      bloco.removeAttribute('data-aberto');
+      const depois = texto.offsetHeight;
+      bloco.setAttribute('data-aberto', '');
+      deslizar(texto, antes, depois, 200, () => { aplicar(); terminar(); }, false);
+    }
   };
   document.addEventListener('click', (e) => {
     const bloco = (e.target as HTMLElement).closest<HTMLElement>('[data-depoimento]');

@@ -20,7 +20,7 @@ const portoes = servicos.map((s) => ({
 <section id="servicos" class="claro bg-branco text-marinho" aria-labelledby="servicos-titulo">
   <div class="mx-auto max-w-[78rem] px-4 py-20 sm:px-6 md:py-28 lg:px-8">
     <h2 id="servicos-titulo" class="max-w-[18ch] text-[2.25rem] sm:text-[3rem] lg:text-[3.5rem]">Para onde você quer ir?</h2>
-    <ul class="mt-12 border-t border-linha" role="list">
+    <ul class="mt-12 border-t border-linha" role="list" data-acende="sequencia">
       {portoes.map((p) => (
         <li class="grid gap-x-8 gap-y-4 border-b border-linha py-8 md:grid-cols-[auto_minmax(0,1fr)_auto] md:items-center">
           <div class="flex items-center gap-5 md:contents">

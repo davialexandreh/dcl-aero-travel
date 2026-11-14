@@ -322,3 +322,6 @@
   /* O canhoto é medido da borda de fora; o fio de 1px desloca o desenho. */
   background-origin: border-box;
 }
+
+/* Sanfona: ao fechar, a seta já volta enquanto o conteúdo desliza para cima. */
+details[data-fechando] > summary svg { rotate: none; }

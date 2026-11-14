@@ -89,7 +89,7 @@ const paginas = Math.max(1, Math.ceil(noAr.length / porPagina));
           const mensagem = `Olá! Tenho interesse na promoção ${d.destino}, saída de ${d.saida}, ${periodo}.`;
           return (
             <li data-partida data-limite={diaLimite(d.ida)} data-pagina={Math.floor(i / porPagina)}>
-              <details class="group">
+              <details class="group" data-sanfona>
                 <summary class="linha-partida grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-3 gap-y-2 px-4 py-3 transition-colors sm:px-6 md:grid-cols-[minmax(0,2.1fr)_minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,0.9fr)_minmax(0,0.9fr)_2rem] md:gap-x-4 md:py-4">
                   <Placas texto={d.destino} minimo={maiorDestino} class="placas-justas order-1 max-w-full overflow-hidden text-[0.875rem] sm:text-[1.1rem] md:text-[1.2rem] lg:text-[1.35rem]" />
                   <span class="order-2 text-right font-painel text-[1.25rem] leading-none font-bold tabular-nums md:order-4 md:text-[1.375rem]">
@@ -107,6 +107,7 @@ const paginas = Math.max(1, Math.ceil(noAr.length / porPagina));
                         status === 'ULTIMOS_DIAS' ? 'bg-marinho text-branco' : 'text-tinta-suave',
                       ]}
                       data-status
+                      data-acende={status === 'ULTIMOS_DIAS' ? 'chamada' : undefined}
                     >
                       {status === 'ULTIMOS_DIAS' ? 'Últimos dias' : 'Programado'}
                     </span>
@@ -271,7 +272,8 @@ const paginas = Math.max(1, Math.ceil(noAr.length / porPagina));
       const dia = new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', day: '2-digit', month: 'short' })
         .format(agora).replace('.', '').replace(' de ', ' ').toUpperCase();
       const hora = new Intl.DateTimeFormat('pt-BR', { timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit' }).format(agora);
-      relogio.textContent = `Hoje · ${dia} · ${hora}`;
+      const [h, m] = hora.split(':');
+      relogio.innerHTML = `Hoje · ${dia} · ${h}<span class="relogio-pontos" aria-hidden="true">:</span>${m}`;
     };
     atualizar();
     const tempo = setInterval(atualizar, 30_000);
@@ -319,12 +321,22 @@ const paginas = Math.max(1, Math.ceil(noAr.length / porPagina));
     .linha-partida:hover { background: rgb(44 65 86 / 0.04); }
     .linha-partida:hover .seta-detalhes { background: var(--color-marinho); border-color: var(--color-marinho); color: var(--color-branco); }
   }
-  details[open] > .linha-partida .seta-detalhes { background: var(--color-marinho); border-color: var(--color-marinho); color: var(--color-branco); }
-  details[open] > .linha-partida .seta-detalhes svg { transform: rotate(180deg); }
+  details[open]:not([data-fechando]) > .linha-partida .seta-detalhes { background: var(--color-marinho); border-color: var(--color-marinho); color: var(--color-branco); }
+  details[open]:not([data-fechando]) > .linha-partida .seta-detalhes svg { transform: rotate(180deg); }
   /* Aberta, a partida ganha um fundo leve para os detalhes lerem como parte dela. */
   [data-partida] details[open] { background: rgb(44 65 86 / 0.04); }
   @media (prefers-reduced-motion: reduce) {
     .seta-detalhes, .seta-detalhes svg { transition: none; }
+  }
+  /* Relógio de aeroporto: os dois pontos piscam a cada segundo; param com o painel fora da tela. */
+  .relogio-pontos { animation: relogio-pisca 1s steps(1, end) infinite; }
+  .painel-pausado .relogio-pontos { animation-play-state: paused; }
+  @keyframes relogio-pisca { 50% { opacity: 0.15; } }
+  /* "Últimos dias" pisca duas vezes ao aparecer, como a última chamada no painel do aeroporto. */
+  [data-acende="chamada"][data-aceso] { animation: ultima-chamada 0.5s steps(1, end) 2; }
+  @keyframes ultima-chamada { 50% { background: transparent; color: var(--color-marinho); box-shadow: inset 0 0 0 1px var(--color-marinho); } }
+  @media (prefers-reduced-motion: reduce) {
+    .relogio-pontos, [data-acende="chamada"][data-aceso] { animation: none; }
   }
   .pag-seta {
     display: grid;

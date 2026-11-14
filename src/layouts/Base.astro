@@ -48,6 +48,13 @@ const canonico = new URL(semBase(Astro.url.pathname), site.url).href;
     <WhatsAppFlutuante />
     <Cookies />
     <script>
+      import { acender } from '../lib/placas';
+      import '../lib/sanfona';
+
+      // Painéis acendem ao aparecer na tela; a cada troca de página, observa os painéis novos.
+      let apagar = () => {};
+      document.addEventListener('astro:page-load', () => { apagar(); apagar = acender(); });
+
       // Origem da visita (UTM) vira o prefixo do código ref: em todos os links de WhatsApp.
       const ORIGENS: Record<string, string> = { instagram: 'ig', ig: 'ig', grupo: 'grupo', whatsapp_grupo: 'grupo' };
       let origem = 'site';
