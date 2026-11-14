@@ -20,7 +20,7 @@ const cotarMenu = linkWhatsApp('Olá! Vim pelo site da DCL e quero uma cotação
 ---
 <!-- Reserva a altura do header aberto: quando ele encolhe ao rolar, o conteúdo não pula. -->
 <div class="h-20 bg-marinho sm:h-[5.5rem]" aria-hidden="true"></div>
-<header data-topo class="group fixed inset-x-0 top-0 z-30 bg-marinho transition-shadow duration-300 data-compacto:shadow-[0_6px_18px_rgb(0_0_0/0.22)]">
+<header data-topo transition:name="topo" transition:animate="none" class="group fixed inset-x-0 top-0 z-30 bg-marinho transition-shadow duration-300 data-compacto:shadow-[0_6px_18px_rgb(0_0_0/0.22)]">
   <div class="mx-auto flex max-w-[78rem] items-center justify-between gap-4 px-4 py-3 transition-[padding] duration-300 group-data-compacto:py-1.5 sm:px-6 lg:px-8">
     <a href={caminho('/')} class="shrink-0" aria-label="DCL Aero Travel, página inicial">
       <img src={caminho('/marca/dcl-logo-branco.webp')} alt="" width="760" height="640" class="h-14 w-auto transition-[height] duration-300 group-data-compacto:h-9 sm:h-16 sm:group-data-compacto:h-10" />

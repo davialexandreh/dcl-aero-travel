@@ -88,7 +88,7 @@ const paginas = Math.max(1, Math.ceil(noAr.length / porPagina));
           const periodo = `${diaCurto(d.ida)} – ${diaCurto(d.volta)}`;
           const mensagem = `Olá! Tenho interesse na promoção ${d.destino}, saída de ${d.saida}, ${periodo}.`;
           return (
-            <li data-partida data-limite={diaLimite(d.ida)} data-pagina={Math.floor(i / porPagina)}>
+            <li data-partida data-limite={diaLimite(d.ida)} data-pagina={Math.floor(i / porPagina)} style={`--i:${i}`}>
               <details class="group" data-sanfona>
                 <summary class="linha-partida grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-x-3 gap-y-2 px-4 py-3 transition-colors sm:px-6 md:grid-cols-[minmax(0,2.1fr)_minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,0.9fr)_minmax(0,0.9fr)_2rem] md:gap-x-4 md:py-4">
                   <Placas texto={d.destino} minimo={maiorDestino} class="placas-justas order-1 max-w-full overflow-hidden text-[0.875rem] sm:text-[1.1rem] md:text-[1.2rem] lg:text-[1.35rem]" />
@@ -216,7 +216,12 @@ const paginas = Math.max(1, Math.ceil(noAr.length / porPagina));
 
     mostrar(0, false);
     const lista = painel.querySelector<HTMLElement>('ul');
-    girar(lista ?? painel);
+    // Na abertura da home, cada linha gira quando termina de se escrever; fora dela, o painel gira inteiro.
+    if (document.documentElement.hasAttribute('data-abertura')) {
+      linhas.filter((li) => !li.hidden).forEach((li, i) => girar(li, 420 + i * 80));
+    } else {
+      girar(lista ?? painel);
+    }
     // A página 1 define a altura do painel: trocar de página não empurra o resto do site.
     if (lista && total > 1) {
       document.fonts.ready.then(() => { lista.style.minHeight = `${lista.offsetHeight}px`; });

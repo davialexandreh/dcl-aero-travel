@@ -15,9 +15,17 @@ interface Props {
 }
 const { titulo, descricao } = Astro.props;
 const canonico = new URL(semBase(Astro.url.pathname), site.url).href;
+
+// Troca de página como embarque: o header fica parado e o conteúdo novo sobe por trás dele
+// enquanto o antigo esmaece. Voltando no histórico, o conteúdo desce em vez de subir.
+const sai = { name: 'embarque-sai', duration: '160ms', easing: 'cubic-bezier(0.4, 0, 1, 1)', fillMode: 'both' };
+const embarque = {
+  forwards: { old: sai, new: { name: 'embarque-entra', duration: '380ms', easing: 'cubic-bezier(0.16, 1, 0.3, 1)', fillMode: 'both' } },
+  backwards: { old: sai, new: { name: 'embarque-volta', duration: '320ms', easing: 'cubic-bezier(0.16, 1, 0.3, 1)', fillMode: 'both' } },
+};
 ---
 <!doctype html>
-<html lang="pt-BR">
+<html lang="pt-BR" transition:animate="none">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -34,6 +42,17 @@ const canonico = new URL(semBase(Astro.url.pathname), site.url).href;
     <meta property="og:url" content={canonico} />
     <meta property="og:image" content={new URL('/apple-touch-icon.png', site.url).href} />
     <ClientRouter />
+    <!-- Abertura da home: só na primeira visita da sessão, antes da primeira pintura, e nunca com movimento reduzido. -->
+    <script is:inline data-home={caminho('/')}>
+      try {
+        var raiz = document.documentElement;
+        var home = location.pathname === document.currentScript.dataset.home;
+        if (home && !sessionStorage.getItem('dcl-abertura') && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          raiz.setAttribute('data-abertura', '');
+          sessionStorage.setItem('dcl-abertura', '1');
+        }
+      } catch (e) {}
+    </script>
   </head>
   <body class="min-h-dvh antialiased">
     <Voo />
@@ -41,10 +60,12 @@ const canonico = new URL(semBase(Astro.url.pathname), site.url).href;
       Pular para o conteúdo
     </a>
     <Cabecalho />
-    <main id="conteudo">
-      <slot />
-    </main>
-    <Rodape />
+    <div transition:animate={embarque}>
+      <main id="conteudo">
+        <slot />
+      </main>
+      <Rodape />
+    </div>
     <WhatsAppFlutuante />
     <Cookies />
     <script>

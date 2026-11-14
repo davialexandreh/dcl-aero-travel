@@ -16,7 +16,7 @@ const largura = Math.max(8, ...lista.map((d) => d.data.destino?.length ?? 0));
 ---
 <section class="bg-marinho" aria-labelledby="chegadas-titulo">
   <div class:list={['mx-auto max-w-[78rem] px-4 pb-20 sm:px-6 md:pb-28 lg:px-8', !continua && 'pt-20 md:pt-28']}>
-    <div data-acende class="rounded-md bg-profundo shadow-[0_18px_40px_rgb(0_0_0/0.35)]">
+    <div class="rounded-md bg-profundo shadow-[0_18px_40px_rgb(0_0_0/0.35)]">
       <header class="flex flex-wrap items-end justify-between gap-4 border-b border-linha px-4 pt-4 pb-3 sm:px-6">
         <h2 id="chegadas-titulo" class="font-painel text-[1.75rem] font-semibold tracking-[0.08em] uppercase sm:text-[2rem]">Chegadas</h2>
         <p class="pb-1 text-[0.9375rem] text-tinta-suave">Quem já voltou conta como foi.</p>
@@ -28,13 +28,13 @@ const largura = Math.max(8, ...lista.map((d) => d.data.destino?.length ?? 0));
       </div>
       <ul class="divide-y divide-linha" role="list">
         {lista.map((d) => (
-          <li class="px-4 py-6 sm:px-6 md:py-8">
+          <li class="px-4 py-6 sm:px-6 md:py-8" data-acende="pouso">
             <div class="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 gap-y-2 md:grid-cols-[minmax(0,4fr)_minmax(0,3fr)_minmax(0,3fr)] md:gap-x-6">
               <span class="col-span-2 md:col-span-1">
                 <Placas texto={d.data.destino ?? '—'} minimo={largura} class="text-[1.0625rem] sm:text-[1.2rem] lg:text-[1.35rem]" />
               </span>
               <span class="font-painel text-lg font-medium tracking-[0.04em]">{d.data.nome}</span>
-              <span class="rotulo-painel justify-self-end text-tinta-suave md:justify-self-start">Desembarcou</span>
+              <span class="justify-self-end md:justify-self-start" data-pouso><Placas texto="Desembarcou" minimo={11} class="text-[0.875rem] sm:text-[0.9375rem]" /></span>
             </div>
             <!-- Depoimento recolhido em 3 linhas com reticências; tocar expande. O texto inteiro continua no HTML para leitores de tela. -->
             <blockquote class="depoimento mt-5 max-w-[60ch] font-titulo text-[1.25rem] leading-[1.5] sm:text-[1.5rem] md:mt-6" data-depoimento>

@@ -325,3 +325,34 @@
 
 /* Sanfona: ao fechar, a seta já volta enquanto o conteúdo desliza para cima. */
 details[data-fechando] > summary svg { rotate: none; }
+
+/* Abertura da home (primeira visita da sessão): o título sobe palavra por palavra de dentro da
+   própria máscara, o apoio aparece em seguida e o painel de Partidas liga linha por linha.
+   Tudo é animação CSS a partir do estado final: se nada rodar, o conteúdo já está lá. */
+.abertura-palavra { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: 0.12em; margin-bottom: -0.12em; }
+.abertura-palavra > span { display: inline-block; }
+html[data-abertura] .abertura-palavra > span {
+  animation: abertura-sobe 700ms var(--ease-placa) both;
+  animation-delay: calc(var(--i) * 45ms);
+}
+html[data-abertura] .abertura-apoio { animation: abertura-apoio 600ms var(--ease-placa) 380ms both; }
+html[data-abertura] [data-partida] {
+  animation: abertura-linha 420ms var(--ease-placa) both;
+  animation-delay: calc(420ms + var(--i) * 80ms);
+}
+@keyframes abertura-sobe { from { transform: translateY(105%); } }
+@keyframes abertura-apoio { from { opacity: 0; transform: translateY(0.5rem); } }
+/* A linha do painel se escreve da esquerda para a direita, como um painel atualizando. */
+@keyframes abertura-linha { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+@media (prefers-reduced-motion: reduce) {
+  html[data-abertura] :is(.abertura-palavra > span, .abertura-apoio, [data-partida]) { animation: none; }
+}
+
+/* Troca de página (embarque): o header fica por cima do conteúdo que sobe. */
+::view-transition-group(topo) { z-index: 10; }
+@keyframes embarque-entra { from { opacity: 0; transform: translateY(3rem); } }
+@keyframes embarque-volta { from { opacity: 0; transform: translateY(-1.5rem); } }
+@keyframes embarque-sai { to { opacity: 0; transform: scale(0.985); } }
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+}

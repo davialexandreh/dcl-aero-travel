@@ -1,6 +1,7 @@
 ---
 // Painel de duas colunas: rótulo em placas e texto em linguagem comum.
 import Placas from './Placas.astro';
+import { Plane } from '@lucide/astro';
 
 interface Linha {
   rotulo: string;
@@ -11,21 +12,151 @@ interface Props {
   colunaRotulo: string;
   colunaTexto: string;
   class?: string;
+  /* Rota: um avião desce pela lista conforme a página rola, e cada etapa acende quando ele passa. */
+  rota?: boolean;
 }
-const { linhas, colunaRotulo, colunaTexto, class: classe = '' } = Astro.props;
+const { linhas, colunaRotulo, colunaTexto, class: classe = '', rota = false } = Astro.props;
 const largura = Math.max(...linhas.map((l) => l.rotulo.length));
 ---
-<div data-acende class={`rounded-md bg-profundo shadow-[0_18px_40px_rgb(0_0_0/0.35)] ${classe}`}>
-  <div class="grid grid-cols-[auto_minmax(0,1fr)] gap-x-6 border-b border-linha px-4 pt-4 pb-3 text-tinta-fraca sm:px-6" aria-hidden="true">
+<div data-acende={rota ? undefined : ''} data-rota={rota ? '' : undefined} class={`rounded-md bg-profundo shadow-[0_18px_40px_rgb(0_0_0/0.35)] ${classe}`}>
+  <div class:list={['grid grid-cols-[auto_minmax(0,1fr)] gap-x-6 border-b border-linha px-4 pt-4 pb-3 text-tinta-fraca sm:px-6', rota && 'pl-12 sm:pl-14']} aria-hidden="true">
     <span class="rotulo-painel">{colunaRotulo}</span>
     <span class="rotulo-painel">{colunaTexto}</span>
   </div>
-  <ol class="divide-y divide-linha" role="list">
+  <ol class:list={['divide-y divide-linha', rota && 'rota relative']} role="list">
+    {rota && (
+      <>
+        <span class="rota-trilho" aria-hidden="true"><span class="rota-rastro"></span></span>
+        <span class="rota-aviao" aria-hidden="true"><Plane size={18} strokeWidth={2} /></span>
+      </>
+    )}
     {linhas.map((l) => (
-      <li class="grid gap-x-6 gap-y-2 px-4 py-5 sm:grid-cols-[auto_minmax(0,1fr)] sm:items-center sm:px-6">
+      <li class:list={['grid gap-x-6 gap-y-2 px-4 py-5 sm:grid-cols-[auto_minmax(0,1fr)] sm:items-center sm:px-6', rota && 'relative pl-12 sm:pl-14']} data-etapa={rota ? '' : undefined}>
+        {rota && <span class="rota-ponto" aria-hidden="true"></span>}
         <h3 class="font-normal"><Placas texto={l.rotulo} minimo={largura} class="placas-justas text-[1rem] sm:text-[1.15rem]" /></h3>
         <p class="max-w-[52ch] text-tinta-suave">{l.texto}</p>
       </li>
     ))}
   </ol>
 </div>
+
+<style is:global>
+  /* Rota do avião: trilho tracejado entre a primeira e a última etapa; o rastro sólido mostra o caminho já feito. */
+  .rota { --rota-x: 1.5rem; --rota-inicio: 0px; --rota-fim: 0px; --rota-progresso: 0; }
+  @media (min-width: 40rem) { .rota { --rota-x: 1.75rem; } }
+  /* O divide-y da lista não vale para o trilho e o avião. */
+  .rota > :is(.rota-trilho, .rota-aviao) { border: 0; }
+  .rota-trilho {
+    position: absolute;
+    left: calc(var(--rota-x) - 1px);
+    top: var(--rota-inicio);
+    height: calc(var(--rota-fim) - var(--rota-inicio));
+    width: 2px;
+    background: repeating-linear-gradient(to bottom, rgb(255 255 255 / 0.28) 0 6px, transparent 6px 12px);
+    pointer-events: none;
+  }
+  .rota-rastro {
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 100%;
+    background: var(--color-branco);
+    transform-origin: top;
+    transform: scaleY(var(--rota-progresso));
+  }
+  .rota-ponto {
+    position: absolute;
+    left: var(--rota-x);
+    top: 1.86rem;
+    width: 0.625rem;
+    height: 0.625rem;
+    margin: -0.3125rem 0 0 -0.3125rem;
+    border-radius: 999px;
+    border: 2px solid rgb(255 255 255 / 0.4);
+    background: var(--color-profundo);
+    z-index: 1;
+    transition: background-color 250ms var(--ease-placa), border-color 250ms var(--ease-placa), transform 250ms var(--ease-placa);
+  }
+  @media (min-width: 40rem) { .rota-ponto { top: 50%; } }
+  [data-etapa][data-passou] .rota-ponto { background: var(--color-branco); border-color: var(--color-branco); transform: scale(1.15); }
+  .rota-aviao {
+    position: absolute;
+    left: var(--rota-x);
+    top: calc(var(--rota-inicio) + (var(--rota-fim) - var(--rota-inicio)) * var(--rota-progresso));
+    z-index: 2;
+    display: grid;
+    place-items: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    margin: -0.875rem 0 0 -0.875rem;
+    border-radius: 999px;
+    background: var(--color-profundo);
+    color: var(--color-branco);
+    /* O ícone aponta para cima e à direita; 135deg deixa o nariz para baixo, no sentido da rota. */
+    rotate: 135deg;
+    pointer-events: none;
+  }
+  /* Sem movimento: a rota aparece inteira e feita, sem o avião. */
+  @media (prefers-reduced-motion: reduce) {
+    .rota { --rota-progresso: 1 !important; }
+    .rota-aviao { display: none; }
+    .rota-ponto { transition: none; }
+  }
+</style>
+
+<script>
+  import { girar, semMovimento } from '../lib/placas';
+
+  let desmontar: Array<() => void> = [];
+  document.addEventListener('astro:before-swap', () => { desmontar.forEach((f) => f()); desmontar = []; });
+
+  document.addEventListener('astro:page-load', () => document.querySelectorAll<HTMLElement>('[data-rota] ol.rota').forEach((rota) => {
+    const etapas = [...rota.querySelectorAll<HTMLElement>('[data-etapa]')];
+    const pontos = etapas.map((e) => e.querySelector<HTMLElement>('.rota-ponto')!);
+    if (semMovimento) { etapas.forEach((e) => e.setAttribute('data-passou', '')); }
+    let centros: number[] = [];
+    // Mede onde ficam os pontos da primeira e da última etapa (mudam com a largura da tela).
+    const medir = () => {
+      const topo = rota.getBoundingClientRect().top;
+      centros = pontos.map((p) => { const r = p.getBoundingClientRect(); return r.top + r.height / 2 - topo; });
+      rota.style.setProperty('--rota-inicio', `${centros[0]}px`);
+      rota.style.setProperty('--rota-fim', `${centros[centros.length - 1]}px`);
+    };
+    let pendente = false;
+    // O avião fica na altura de 60% da tela: a etapa acende quando ele chega nela.
+    const voar = () => {
+      pendente = false;
+      if (semMovimento) return;
+      const topo = rota.getBoundingClientRect().top;
+      const alvo = window.innerHeight * 0.6 - topo;
+      const inicio = centros[0];
+      const fim = centros[centros.length - 1];
+      const progresso = Math.min(1, Math.max(0, (alvo - inicio) / (fim - inicio)));
+      rota.style.setProperty('--rota-progresso', progresso.toFixed(4));
+      etapas.forEach((etapa, i) => {
+        // A etapa acende quando a linha dos 60% da tela chega no ponto dela (a primeira também espera).
+        const passou = alvo >= centros[i] - 1;
+        if (passou && !etapa.hasAttribute('data-passou')) {
+          etapa.setAttribute('data-passou', '');
+          girar(etapa);
+        } else if (!passou && etapa.hasAttribute('data-passou')) {
+          etapa.removeAttribute('data-passou');
+        }
+      });
+    };
+    const agendar = () => { if (!pendente) { pendente = true; requestAnimationFrame(voar); } };
+    const remedir = () => { medir(); agendar(); };
+    document.fonts.ready.then(remedir);
+    medir();
+    if (semMovimento) return;
+    voar();
+    // Só acompanha a rolagem enquanto o painel está na tela.
+    let ativo = false;
+    const observador = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting && !ativo) { ativo = true; window.addEventListener('scroll', agendar, { passive: true }); agendar(); }
+      if (!e.isIntersecting && ativo) { ativo = false; window.removeEventListener('scroll', agendar); agendar(); }
+    }, { rootMargin: '20% 0px' });
+    observador.observe(rota);
+    window.addEventListener('resize', remedir);
+    desmontar.push(() => { observador.disconnect(); window.removeEventListener('scroll', agendar); window.removeEventListener('resize', remedir); });
+  }));
+</script>
