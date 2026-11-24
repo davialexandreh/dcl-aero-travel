@@ -1,5 +1,7 @@
 ---
+import { Image } from 'astro:assets';
 import PainelLista from './PainelLista.astro';
+import fotoAndes from '../assets/fotos/andes.jpg';
 
 // A viagem do cliente como status de voo. Cada etapa diz o que a DCL faz.
 const etapas = [
@@ -17,12 +19,16 @@ const etapas = [
       <p class="mt-6 max-w-[46ch] text-lg text-tinta-suave">
         A mesma equipe cuida de tudo, do começo ao fim. Quem cota é quem emite, faz o check-in e responde no meio da viagem, direto no seu WhatsApp.
       </p>
+      <!-- Foto real do dono da DCL em viagem (sem imagem genérica, como prometido na proposta). -->
       <figure class="mt-10 max-w-[12rem] sm:max-w-[14rem] lg:max-w-[16rem]">
-        <div class="grid aspect-[4/5] place-items-center rounded-md border border-dashed border-linha bg-white/[0.03] p-6 text-center">
-          <p class="font-painel text-sm font-semibold tracking-[0.12em] uppercase text-tinta-suave">
-            Foto de viagem<br />(aguardando envio)
-          </p>
-        </div>
+        <Image
+          src={fotoAndes}
+          alt="David Campos Luiz, CEO da DCL, na neve, com uma montanha nevada ao fundo"
+          widths={[384, 768]}
+          sizes="(min-width: 1024px) 16rem, (min-width: 640px) 14rem, 12rem"
+          class="aspect-[4/5] w-full rounded-md object-cover"
+        />
+        <figcaption class="mt-2 font-painel text-xs font-semibold tracking-[0.12em] uppercase text-tinta-suave">Andes</figcaption>
       </figure>
     </div>
     <PainelLista linhas={etapas} colunaRotulo="Status" colunaTexto="O que a DCL faz" class="self-center" rota />
