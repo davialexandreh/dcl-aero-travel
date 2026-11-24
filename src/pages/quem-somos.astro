@@ -5,9 +5,22 @@ import PaginaTopo from '../components/PaginaTopo.astro';
 import PainelLista from '../components/PainelLista.astro';
 import Chegadas from '../components/Chegadas.astro';
 import ChamadaFinal from '../components/ChamadaFinal.astro';
+import { Image } from 'astro:assets';
 import { site } from '../config/site';
+import fotoChile from '../assets/fotos/chile.jpg';
+import fotoRio from '../assets/fotos/rio-de-janeiro.jpg';
+import fotoOrlando from '../assets/fotos/orlando.jpg';
+import fotoBalneario from '../assets/fotos/balneario-camboriu.jpg';
 
 const depoimentos = await getCollection('depoimentos');
+// Fotos do David (CEO) em viagem, mandadas pelo cliente em 24/11/2026 e recortadas em 3:4.
+// O destino vira a legenda, como num painel. A dos Andes fica na home (Jornada).
+const fotos = [
+  { src: fotoChile, destino: 'Chile', alt: 'David segurando o mastro de uma bandeira do Chile, num calçadão à beira-mar' },
+  { src: fotoRio, destino: 'Rio de Janeiro', alt: 'David de braços cruzados na beira da baía, com o Pão de Açúcar ao fundo' },
+  { src: fotoOrlando, destino: 'Orlando', alt: 'David em pé diante do castelo do Magic Kingdom' },
+  { src: fotoBalneario, destino: 'Balneário Camboriú', alt: 'David caminhando num mirante, com os prédios e a praia ao fundo' },
+];
 const ficha = [
   { rotulo: 'Empresa', texto: site.nome },
   { rotulo: 'CEO', texto: site.responsavel },
@@ -35,13 +48,22 @@ const ficha = [
         <p class="mt-6 max-w-[46ch] text-lg text-tinta-suave">
           A DCL atende pessoas e empresas com passagens aéreas, pacotes, aluguel de carros, personalização de roteiros, seguro viagem e cruzeiros. Do outro lado do WhatsApp está sempre a mesma equipe, que conhece a sua viagem.
         </p>
-        <div class="mt-10 grid max-w-[24rem] grid-cols-2 gap-3" aria-label="Fotos das viagens">
-          {[0, 1, 2, 3].map(() => (
-            <div class="grid aspect-square place-items-center rounded-md border border-dashed border-linha bg-white/[0.03] p-3 text-center">
-              <p class="font-painel text-xs font-semibold tracking-[0.12em] uppercase text-tinta-suave">Foto de viagem<br />(aguardando)</p>
-            </div>
+        <ul class="mt-10 grid max-w-[26rem] grid-cols-2 gap-3" role="list" aria-label="Fotos das viagens">
+          {fotos.map((f) => (
+            <li>
+              <figure>
+                <Image
+                  src={f.src}
+                  alt={f.alt}
+                  widths={[320, 640]}
+                  sizes="(min-width: 640px) 13rem, calc(50vw - 1.5rem)"
+                  class="aspect-[3/4] w-full rounded-md object-cover"
+                />
+                <figcaption class="mt-2 font-painel text-xs font-semibold tracking-[0.12em] uppercase text-tinta-suave">{f.destino}</figcaption>
+              </figure>
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
       <PainelLista linhas={ficha} colunaRotulo="Ficha" colunaTexto="Dados" class="self-start" />
     </div>

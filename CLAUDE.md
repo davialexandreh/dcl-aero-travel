@@ -97,6 +97,7 @@ Contexto para o Claude Code. Reconstruído em 24/11/2026, depois que o históric
 15. **Cadastur:** o número está igual ao CNPJ (59.352.256/0001-00). Conferir na consulta pública.
 16. **Logo:** só existe em PNG ou WebP. Pedir o vetorial.
 17. **Textos de A4–A6 em rascunho:** roteiros, seguro viagem e cruzeiros foram escritos sem afirmar nada além do básico (sem seguradora, cobertura, companhia marítima ou forma de pagamento). O cliente precisa aprovar. Nenhuma pergunta do FAQ aponta para seguro ou cruzeiros ainda.
+18. **Fotos do cliente (24/11):** são do David (confirmado pelo Davi). Estão em `src/assets/fotos` (recorte 3:4, otimizadas pelo `astro:assets`): Andes na home (seção Jornada) e Chile, Rio de Janeiro, Orlando e Balneário Camboriú no "Quem somos". O cliente pediu uma paisagem da internet para a home, mas a proposta promete "sem imagem genérica"; o Davi escolheu a foto do David nos Andes. Confirmar a legenda "Balneário Camboriú". As fotos com crianças (família em Orlando) e com logos (SeaWorld, Universal) ficaram de fora até haver autorização por escrito do responsável. Os originais do WhatsApp em `src/assets` não vão para o repositório.
 
 ## 5. Migração para o domínio (crítico: o e-mail não pode cair)
 
