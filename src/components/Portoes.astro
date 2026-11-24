@@ -11,7 +11,9 @@ const resumos: Record<string, string> = {
   'passagens-aereas': 'Voos nacionais e internacionais pelo melhor preço que a nossa equipe encontrar, com parcelamento.',
   pacotes: 'Passagem, hotel e passeios num pacote só, montado para o seu jeito de viajar.',
   'aluguel-de-carros': 'Carro reservado para retirar no aeroporto, do popular ao SUV.',
-  'mentoria-de-viagens': 'Para quem quer aprender a planejar e emitir as próprias passagens, ou prefere que alguém cuide disso.',
+  'personalizacao-de-roteiros': 'Roteiro montado com você, do seu jeito, com o seu tempo e o seu orçamento.',
+  'seguro-viagem': 'Seguro cotado para o seu destino e as suas datas, junto com a viagem ou separado.',
+  cruzeiros: 'Roteiro, navio e cabine escolhidos com você, do orçamento à volta.',
 };
 const portoes = servicos.map((s) => ({
   portao: s.portao, nome: s.nome, href: caminho(`/${s.slug}`), ref: s.ref, texto: resumos[s.slug], mensagem: s.mensagem,
