@@ -1,20 +1,30 @@
 ---
-import { caminho } from '../lib/caminho';
+import { caminho, semBase } from '../lib/caminho';
 import IconeWhatsApp from './IconeWhatsApp.astro';
 import IconeInstagram from './IconeInstagram.astro';
 import { Menu, X, ChevronRight } from '@lucide/astro';
 import Placas from './Placas.astro';
 import { linkWhatsApp } from '../lib/whatsapp';
 import { site } from '../config/site';
+import { servicos } from '../data/servicos';
+
+// Página atual, sem a base e sem a barra final, para marcar o item do menu.
+const atual = semBase(Astro.url.pathname).replace(/(.)\/$/, '$1');
+const paginasServicos = servicos.map((s) => `/${s.slug}`);
 
 // O rótulo é a placa; o local é como o painel do aeroporto chamaria aquela área do site.
+// "Serviços" fica marcado em qualquer página de serviço; Promoções e Serviços não marcam na home (são âncoras).
 const itens = [
-  { href: caminho('/#partidas'), rotulo: 'Promoções', local: 'Partidas' },
-  { href: caminho('/#servicos'), rotulo: 'Serviços', local: 'Portões A1–A6' },
-  { href: caminho('/empresas'), rotulo: 'Empresas', local: 'Corporativo' },
-  { href: caminho('/duvidas'), rotulo: 'Dúvidas', local: 'Balcão' },
-  { href: caminho('/quem-somos'), rotulo: 'Quem somos', local: 'Ficha' },
-];
+  { href: caminho('/#partidas'), rotulo: 'Promoções', local: 'Partidas', ativo: false },
+  { href: caminho('/#servicos'), rotulo: 'Serviços', local: 'Portões A1–A6', ativo: paginasServicos.includes(atual) },
+  { href: caminho('/empresas'), rotulo: 'Empresas', local: 'Corporativo', ativo: atual === '/empresas' },
+  { href: caminho('/duvidas'), rotulo: 'Dúvidas', local: 'Balcão', ativo: atual === '/duvidas' },
+  { href: caminho('/quem-somos'), rotulo: 'Quem somos', local: 'Ficha', ativo: atual === '/quem-somos' },
+].map((i) => ({
+  ...i,
+  // Página exata: "page". Seção (serviço dentro de Serviços): "true".
+  ariaCurrent: i.ativo ? (i.rotulo === 'Serviços' ? 'true' : 'page') : undefined,
+}));
 const cotar = linkWhatsApp('Olá! Vim pelo site da DCL e quero uma cotação.', 'topo');
 const cotarMenu = linkWhatsApp('Olá! Vim pelo site da DCL e quero uma cotação.', 'menu');
 ---
@@ -28,7 +38,7 @@ const cotarMenu = linkWhatsApp('Olá! Vim pelo site da DCL e quero uma cotação
     <nav aria-label="Principal" class="hidden lg:block">
       <ul class="flex items-center gap-7" role="list">
         {itens.map((i) => (
-          <li><a href={i.href} class="font-painel text-[1.0625rem] font-medium tracking-[0.06em] uppercase text-tinta-suave no-underline transition-colors hover:text-branco">{i.rotulo}</a></li>
+          <li><a href={i.href} aria-current={i.ariaCurrent} data-ativo={i.ativo || undefined} class="nav-item relative font-painel text-[1.0625rem] font-medium tracking-[0.06em] uppercase text-tinta-suave no-underline transition-colors hover:text-branco data-ativo:text-branco">{i.rotulo}</a></li>
         ))}
       </ul>
     </nav>
@@ -49,7 +59,7 @@ const cotarMenu = linkWhatsApp('Olá! Vim pelo site da DCL e quero uma cotação
             <ul role="list">
               {itens.map((i) => (
                 <li class="border-b border-linha">
-                  <a href={i.href} class="-mx-4 flex min-h-16 items-center gap-4 px-4 no-underline transition-colors hover:bg-white/[0.04] sm:-mx-6 sm:px-6">
+                  <a href={i.href} aria-current={i.ariaCurrent} data-ativo={i.ativo || undefined} class="menu-item relative -mx-4 flex min-h-16 items-center gap-4 px-4 no-underline transition-colors hover:bg-white/[0.04] data-ativo:bg-white/[0.06] sm:-mx-6 sm:px-6">
                     <Placas texto={i.rotulo} class="text-[1.125rem]" />
                     <span class="rotulo-painel ml-auto text-right text-tinta-suave" aria-hidden="true">{i.local}</span>
                     <ChevronRight size={18} class="shrink-0 text-tinta-fraca" aria-hidden="true" />
@@ -90,6 +100,33 @@ const cotarMenu = linkWhatsApp('Olá! Vim pelo site da DCL e quero uma cotação
     details[open] .menu-fundo { animation: none; }
   }
   :global(html.menu-aberto) { overflow: hidden; }
+
+  /* Página atual no menu: barra branca sob o rótulo (computador) ou na borda esquerda (celular).
+     No hover a barra aparece fraca, para o item marcado continuar se destacando. */
+  .nav-item::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    bottom: -0.45rem;
+    height: 2px;
+    background: var(--color-branco);
+    transform: scaleX(0);
+    opacity: 0.4;
+    transition: transform 200ms var(--ease-placa, ease-out), opacity 200ms ease-out;
+  }
+  .nav-item:hover::after { transform: scaleX(1); }
+  .nav-item[data-ativo]::after { transform: scaleX(1); opacity: 1; }
+  .menu-item[data-ativo]::before {
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    left: 0;
+    width: 4px;
+    background: var(--color-branco);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .nav-item::after { transition: none; }
+  }
   /* Sobre o marinho do menu, as placas escurecem para não sumirem no fundo. */
   .menu-painel {
     --color-placa-topo: color-mix(in srgb, var(--color-profundo) 55%, var(--color-marinho));
